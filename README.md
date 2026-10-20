@@ -82,9 +82,8 @@ replaced with invented values.
 
 ![Ledger research architecture overview](docs/architecture-overview.svg)
 
-Live public data moves through one bounded workflow: resolve the company, retrieve evidence, calculate
-metrics, verify peers, and publish a cited report. Python owns every figure and the valuation verdict;
-the optional model can only suggest peers or write prose from minimized public evidence.
+One LangGraph workflow moves from a ticker to public evidence, deterministic calculations, verified
+peers, and a cited report. The model is optional and never owns the numbers.
 
 [Read the concise architecture](docs/ARCHITECTURE.md) · [Open the standalone HTML version](docs/ARCHITECTURE.html)
 
