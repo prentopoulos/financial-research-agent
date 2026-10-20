@@ -1,81 +1,51 @@
 # Ledger architecture
 
-## Runtime components
+Live public data enters once. Python calculates the numbers. Ledger returns a cited research memo.
+
+## System map
 
 ```mermaid
 flowchart LR
-    User[Researcher] --> Web[React and Vite client]
-    Web -->|POST research ticker| API[FastAPI research API]
-    API --> Graph[LangGraph workflow]
-    Graph --> SEC[SEC EDGAR]
-    Graph --> Market[Market chart API]
-    Graph --> Calc[Python financial engine]
-    Graph -. minimized public evidence .-> Model[Owner model account]
-    Graph -. optional traces .-> Smith[Owner LangSmith account]
-    Graph --> Report[Cited report and trace]
-    Report --> Web
+    R[Researcher] -->|Ticker| UI[Ledger]
+    UI --> API[Research API]
+    SEC[SEC filings] --> API
+    MKT[Market prices] --> API
+    API --> PY[Python engine]
+    PY --> OUT[Cited report]
+    OUT --> UI
+    MODEL[Optional model] -. candidate peers + prose .-> API
 ```
 
-## Agent responsibilities
+The model is optional. It may suggest peers and write prose from minimized public evidence, but it
+does not calculate figures or change the valuation verdict.
+
+## One research run
 
 ```mermaid
-sequenceDiagram
-    actor User
-    participant API as FastAPI
-    participant Graph as LangGraph
-    participant Public as SEC + Market APIs
-    participant Python as Calculation engine
-    participant Model as BYO model
-
-    User->>API: Analyze ticker
-    API->>API: Validate ticker format
-    API->>Graph: Start bounded run
-    Graph->>Public: Resolve company and retrieve facts
-    Public-->>Graph: Public structured records
-    Graph->>Python: Select annual, TTM, prospectus, or interim basis
-    Python->>Python: Normalize XBRL tags and calculate valuation
-    Python-->>Graph: Deterministic metrics and verdict
-    opt Model key configured
-        Graph->>Model: Public company identity + minimized calculated evidence
-        Model-->>Graph: Candidate peers and JSON prose
-        Graph->>Public: Validate candidate tickers and retrieve their facts
-    end
-    Graph-->>API: Report, citations, trace, model usage
-    API-->>User: Auditable research view
+flowchart LR
+    A[01 Resolve] --> B[02 Retrieve]
+    B --> C[03 Calculate]
+    C --> D[04 Select peers]
+    D --> E[05 Verify peers]
+    E --> F[06 Publish]
 ```
 
-The model never calculates financial figures or changes the verdict. Invalid model output is rejected;
-provider failure returns the deterministic memo. Candidate peers enter the table only after SEC
-resolution and independent calculation.
+- **Resolve:** match the ticker to an SEC company.
+- **Retrieve:** load filings, company facts, and market history.
+- **Calculate:** normalize periods and calculate metrics in Python.
+- **Select:** use the configured model or an SEC-industry fallback.
+- **Verify:** retrieve and calculate every peer independently.
+- **Publish:** return the memo, citations, evidence basis, and run trace.
 
-## Filing compatibility
+## Trust contract
 
-```mermaid
-flowchart TD
-    F[SEC Company Facts] --> A{Latest compatible basis}
-    X[Bounded inline-XBRL filing fallback] --> A
-    A -->|10-K / 20-F / 40-F| Y[Reported annual]
-    A -->|Annual plus YTD or four quarters| T[Trailing 12 months]
-    A -->|S-1 / F-1 / 424B| P[Prospectus annual]
-    A -->|Recent listing with interim history| I[Annualized interim]
-    I --> L[Low-confidence cap]
-    P --> L
-```
+| Concern | Owner | Rule |
+| --- | --- | --- |
+| Figures and verdict | Python | Deterministic and testable outside the language layer |
+| Narrative and peer suggestions | Optional model | Public, minimized evidence only; output is validated |
+| Missing or failed data | API | Remains unavailable or becomes an explicit error |
 
-The inline-XBRL fallback reads a bounded set of SEC documents only when Company Facts has limited
-history. It joins split document sets, excludes dimensional breakdowns from operating totals, sums
-share-class facts when no consolidated share count exists, and never asks the language model to infer a
-missing number.
+The runtime keeps private data out of the research session. Ledger has no trading, messaging,
+background-write, or database capability in the local MVP.
 
-## Data ownership
-
-| Data | Owner/source | Persistence | Sent to model |
-|---|---|---|---|
-| Ticker | User | In-memory request only | Yes, normalized |
-| Company facts | SEC | In-memory run only | Selected calculated fields only |
-| Market price | Yahoo chart endpoint | In-memory run only | Selected calculated fields only |
-| API keys | User environment | `.env`, Git-ignored | Never |
-| Report | User | Browser memory / explicit Markdown export | Model prose becomes part of report |
-| Trace | Local UI; optional LangSmith | No local database | Public run data only when enabled |
-
-The MVP has no PostgreSQL memory, trading authority, messaging capability, or background scheduler.
+For the visual version, open [`ARCHITECTURE.html`](ARCHITECTURE.html).

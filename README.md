@@ -79,31 +79,17 @@ replaced with invented values.
 
 ```mermaid
 flowchart LR
-    U[Browser] -->|Validated ticker| API[FastAPI]
-    API --> G[LangGraph workflow]
-    G --> SEC[SEC EDGAR APIs]
-    G --> YF[Yahoo chart endpoint]
-    G --> PY[Python calculations]
-    G -. public minimized context .-> LLM[Your OpenAI-compatible model]
-    G -. optional traces .-> LS[Your LangSmith project]
-    PY --> R[Cited report]
-    LLM -->|Peer suggestions and prose only| R
-    R --> U
+    R[Researcher] -->|Ticker| L[Ledger]
+    SEC[SEC filings] --> L
+    MKT[Market prices] --> L
+    L --> PY[Python engine]
+    PY --> OUT[Cited report]
+    MODEL[Optional model] -. peers + prose .-> L
 ```
 
-```mermaid
-flowchart TD
-    A[Resolve company] --> B[Retrieve SEC and market data]
-    B --> C[Resolve annual, TTM, prospectus, or interim basis]
-    C --> C2[Calculate filing-derived fundamentals]
-    C2 --> D[Select candidate peers]
-    D --> E[Validate peers with SEC data]
-    E --> F[Calculate relative valuation]
-    F --> G[Compose grounded memo]
-    G --> H[Return citations and run trace]
-```
-
-Detailed diagrams and component boundaries are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Python owns every figure and the valuation verdict. The optional model sees minimized public evidence
+and can only suggest peers or write prose. See the [concise architecture](docs/ARCHITECTURE.md) or open
+the [standalone visual](docs/ARCHITECTURE.html).
 
 ## LangSmith observability
 
