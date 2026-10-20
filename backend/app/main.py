@@ -29,7 +29,7 @@ async def health() -> dict[str, str]:
 async def research(ticker: str) -> ResearchReport:
     ticker = ticker.strip().upper()
     if not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,7}", ticker):
-        raise HTTPException(status_code=422, detail="Enter a valid U.S. ticker symbol.")
+        raise HTTPException(status_code=422, detail="Enter a valid SEC-listed ticker symbol.")
     try:
         return await run_research(ticker)
     except DataProviderError as exc:

@@ -176,7 +176,9 @@ function App() {
       report.summary,
       "",
       "## Financials",
-      `- Fiscal year: ${report.financials.fiscal_year}`,
+      `- Evidence basis: ${report.financials.basis_label}`,
+      `- Source form: ${report.financials.source_form}`,
+      `- Limited reporting history: ${report.financials.limited_history ? "Yes" : "No"}`,
       `- Revenue: ${money(report.financials.revenue, false)}`,
       `- Revenue growth: ${pct(report.financials.revenue_growth)}`,
       `- Gross margin: ${pct(report.financials.gross_margin)}`,
@@ -230,7 +232,7 @@ function App() {
         <form className="ticker-search" onSubmit={submit} role="search">
           <Search size={16} aria-hidden="true" />
           <label className="sr-only" htmlFor="ticker">Company ticker</label>
-          <input ref={tickerInput} id="ticker" value={query} onChange={(event) => setQuery(event.target.value.toUpperCase().replace(/[^A-Z0-9.-]/g, ""))} placeholder="AAPL or BRK.B" maxLength={8} pattern="[A-Za-z][A-Za-z0-9.-]{0,7}" title="Enter a U.S. ticker such as AAPL or BRK.B" required autoComplete="off" />
+          <input ref={tickerInput} id="ticker" value={query} onChange={(event) => setQuery(event.target.value.toUpperCase().replace(/[^A-Z0-9.-]/g, ""))} placeholder="AAPL or XNDU" maxLength={8} pattern="[A-Za-z][A-Za-z0-9.-]{0,7}" title="Enter an SEC-listed ticker such as AAPL or XNDU" required autoComplete="off" />
           <button type="submit" disabled={loading}>{loading ? "Running" : "Analyze"}<ChevronRight size={15} /></button>
         </form>
         <div className={`data-state ${error ? "failed" : loading ? "retrieving" : "live"}`}><span /> {error ? "Retrieval failed" : loading ? "Retrieving" : `Live · ${report?.valuation.as_of ?? "ready"}`}</div>
@@ -286,7 +288,7 @@ function App() {
 
             <section className="metric-band" aria-label="Key metrics">
               <Metric label="Share price" value={money(report.valuation.price, false)} note={`As of ${report.valuation.as_of}`} />
-              <Metric label="Revenue growth" value={pct(report.financials.revenue_growth)} note={`FY ${report.financials.fiscal_year}`} tone="good" />
+              <Metric label="Revenue growth" value={pct(report.financials.revenue_growth)} note={report.financials.basis_label} tone="good" />
               <Metric label="Gross margin" value={pct(report.financials.gross_margin)} note="Reported, GAAP" />
               <Metric label="P / E" value={multiple(report.valuation.pe)} note="Trailing reported earnings" tone="warn" />
             </section>
@@ -305,13 +307,17 @@ function App() {
               <div className="section-number">02</div>
               <div className="section-title"><span className="eyebrow">Financial profile</span><h2>Growth with a cash engine</h2></div>
               <div className="financial-grid">
-                <div><span>Revenue</span><strong>{money(report.financials.revenue)}</strong><small>FY {report.financials.fiscal_year}</small></div>
+                <div><span>Revenue</span><strong>{money(report.financials.revenue)}</strong><small>{report.financials.basis_label}</small></div>
                 <div><span>Free cash flow</span><strong>{money(report.financials.free_cash_flow)}</strong><small>Operating cash less capex</small></div>
                 <div><span>Operating margin</span><strong>{pct(report.financials.operating_margin)}</strong><small>Reported, GAAP</small></div>
                 <div><span>Net margin</span><strong>{pct(report.financials.net_margin)}</strong><small>Reported, GAAP</small></div>
                 <div><span>Cash</span><strong>{money(report.financials.cash)}</strong><small>Latest reported balance</small></div>
                 <div><span>Debt</span><strong>{money(report.financials.debt)}</strong><small>Current + long-term debt</small></div>
               </div>
+              <p className={`basis-note ${report.financials.limited_history ? "limited" : ""}`}>
+                <BookOpen size={16} />
+                <span><strong>{report.financials.source_form}</strong> · {report.financials.basis_label}.{report.financials.limited_history ? " Limited-history mode caps confidence at Low." : ""}</span>
+              </p>
             </section>
 
             <section className="memo-section" id="valuation">

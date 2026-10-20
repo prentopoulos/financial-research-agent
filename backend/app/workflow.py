@@ -66,7 +66,10 @@ def timed(name: str):
     return decorator
 
 
-def fallback_peer_tickers(sic: str, subject: str) -> list[str]:
+def fallback_peer_tickers(sic: str, subject: str, company_name: str = "") -> list[str]:
+    normalized_name = company_name.lower()
+    if "quantum" in normalized_name or "quantinuum" in normalized_name:
+        return [ticker for ticker in ["IONQ", "RGTI", "QBTS"] if ticker != subject.upper()][:2]
     try:
         sic_number = int(sic)
     except (TypeError, ValueError):
@@ -123,19 +126,26 @@ async def retrieve_data(state: ResearchState) -> ResearchState:
 @timed("Calculate fundamentals")
 async def calculate_subject(state: ResearchState) -> ResearchState:
     financials, shares = extract_financials(state["company_facts"])
+    if financials.limited_history:
+        async with PublicDataClient() as client:
+            documents = await client.financial_documents(state["company"]["cik"], state["submissions"])
+        if documents:
+            enhanced, enhanced_shares = extract_financials(state["company_facts"], documents)
+            if enhanced.period_end >= financials.period_end:
+                financials, shares = enhanced, enhanced_shares or shares
     price, as_of = extract_market(state["chart"])
     valuation = calculate_valuation(financials, shares, price, as_of)
     subject = as_peer(state["ticker"], state["company"]["name"], financials, valuation)
     return {
         "subject": {"financials": financials.model_dump(), "valuation": valuation.model_dump(), "peer": subject.model_dump()},
-        "_detail": f"Calculated GAAP margins and valuation from FY {financials.fiscal_year} facts.",
+        "_detail": f"Calculated filing-derived metrics using {financials.basis_label}.",
     }
 
 
 @timed("Select comparable peers")
 async def select_peers(state: ResearchState) -> ResearchState:
     model = ModelClient()
-    fallback = fallback_peer_tickers(state["company"].get("sic", ""), state["ticker"])
+    fallback = fallback_peer_tickers(state["company"].get("sic", ""), state["ticker"], state["company"].get("name", ""))
     if not model.enabled:
         return {
             "peer_tickers": fallback,
@@ -167,8 +177,18 @@ async def select_peers(state: ResearchState) -> ResearchState:
 
 async def _peer_snapshot(client: PublicDataClient, ticker: str) -> dict[str, Any]:
     company = await client.resolve_company(ticker)
-    facts, chart = await asyncio.gather(client.company_facts(company["cik"]), client.market_chart(ticker))
+    facts, submissions, chart = await asyncio.gather(
+        client.company_facts(company["cik"]),
+        client.submissions(company["cik"]),
+        client.market_chart(ticker),
+    )
     financials, shares = extract_financials(facts)
+    if financials.limited_history:
+        documents = await client.financial_documents(company["cik"], submissions)
+        if documents:
+            enhanced, enhanced_shares = extract_financials(facts, documents)
+            if enhanced.period_end >= financials.period_end:
+                financials, shares = enhanced, enhanced_shares or shares
     price, as_of = extract_market(chart)
     valuation = calculate_valuation(financials, shares, price, as_of)
     return as_peer(ticker, company["name"], financials, valuation).model_dump()
@@ -209,7 +229,7 @@ def deterministic_memo(verdict: str, financials: dict[str, Any], valuation: dict
         "Insufficient evidence": "The available primary-source facts or validated peers are not complete enough for a defensible relative valuation conclusion.",
     }
     thesis = [
-        f"Revenue changed {financials['revenue_growth']:.1%} in fiscal {financials['fiscal_year']} based on SEC-reported annual facts." if financials["revenue_growth"] is not None else "Annual revenue growth could not be calculated from comparable SEC facts.",
+        f"Revenue changed {financials['revenue_growth']:.1%} on the {financials['basis_label'].lower()} basis." if financials["revenue_growth"] is not None else f"Comparable revenue growth was unavailable for the {financials['basis_label'].lower()} basis.",
         f"Gross margin was {financials['gross_margin']:.1%} and operating margin was {financials['operating_margin']:.1%}." if financials["gross_margin"] is not None and financials["operating_margin"] is not None else "One or more reported margin facts were unavailable.",
         f"Free cash flow was approximately ${financials['free_cash_flow'] / 1_000_000_000:.1f}B after reported capital spending." if financials["free_cash_flow"] is not None else "Comparable operating cash flow and capital-spending facts were not both available.",
         f"The stock trades at {valuation['price_to_sales']:.1f}× sales, {premium:.1f}× the selected peer median." if premium is not None else "The relative sales multiple could not be calculated with the available facts.",
@@ -217,7 +237,7 @@ def deterministic_memo(verdict: str, financials: dict[str, Any], valuation: dict
     risks = [
         "Review the latest filing’s Risk Factors section for company-specific operating and regulatory exposures.",
         "A high earnings or sales multiple increases downside sensitivity if growth or margins weaken.",
-        "One fiscal-year comparison may not represent the durability of demand, pricing, or cash generation.",
+        "Limited or interim reporting history may not represent the durability of demand, pricing, or cash generation." if financials["limited_history"] else "One fiscal-year comparison may not represent the durability of demand, pricing, or cash generation.",
         "Peer multiples are a screening tool, not intrinsic value; business mix and accounting comparability can differ materially.",
     ]
     return {"summary": summaries[verdict], "thesis": thesis, "risks": risks}
@@ -229,6 +249,8 @@ async def compose_report(state: ResearchState) -> ResearchState:
     peers = state["peers"]
     verdict, confidence = verdict_for(type("PeerLike", (), subject)(), [type("PeerLike", (), row)() for row in peers])
     financials = state["subject"]["financials"]
+    if financials["limited_history"]:
+        confidence = "Low"
     valuation = state["subject"]["valuation"]
     peer_ps = [row["price_to_sales"] for row in peers if row["ticker"] != state["ticker"] and row["price_to_sales"] is not None]
     median_peer_ps = median(peer_ps) if peer_ps else None
@@ -270,6 +292,9 @@ async def compose_report(state: ResearchState) -> ResearchState:
         accession, document, filing_date = filing
         accession_plain = accession.replace("-", "")
         citations.insert(0, Citation(label=f"Latest available filing ({filing_date})", url=f"https://www.sec.gov/Archives/edgar/data/{cik_plain}/{accession_plain}/{document}", source="U.S. Securities and Exchange Commission", retrieved_at=retrieved))
+    financial_source = financials.get("source_url")
+    if financial_source and all(citation.url != financial_source for citation in citations):
+        citations.insert(0, Citation(label=f"Financial basis source ({financials['source_form']})", url=financial_source, source="U.S. Securities and Exchange Commission", retrieved_at=retrieved))
 
     model_run = ModelRun(
         enabled=model_used,
@@ -297,7 +322,8 @@ async def compose_report(state: ResearchState) -> ResearchState:
         trace=[],
         model=model_run,
         methodology=(
-            "Reported GAAP facts come from SEC Company Facts. Market capitalization uses the latest available share price and SEC-reported shares outstanding. "
+            f"Financial metrics use {financials['basis_label']}. Reported facts come from SEC Company Facts and, when needed, consolidated inline-XBRL facts in SEC filings. "
+            "Market capitalization uses the latest available share price and SEC-reported shares outstanding. "
             "Multiples are calculated in Python. The configured model may select candidate peers and write prose, but it cannot alter figures or the deterministic verdict."
         ),
     )

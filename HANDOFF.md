@@ -13,6 +13,7 @@ Phase 1 MVP implementation is being finalized for an owner-authorized GitHub pus
 - FastAPI + LangGraph workflow using live SEC and market-price data.
 - Optional BYO OpenAI-compatible model for validated peer selection and grounded prose.
 - Optional LangSmith tracing, disabled in the template and enabled in the owner's ignored local environment.
+- 20-F/40-F, prospectus, TTM, issuer-extension XBRL, and recent-listing financial bases.
 - Runtime enforcement of the two-of-three agent access boundary.
 - Python financial calculations, AMD/Intel comparison, deterministic cited memo, Markdown export.
 - Loading, provider failure, trace timing, and zero-cost reporting states.
@@ -23,10 +24,12 @@ Phase 1 MVP implementation is being finalized for an owner-authorized GitHub pus
 
 - `npm run typecheck`: pass.
 - `npm run lint`: pass.
-- Python unit tests: pass (5).
+- Python unit tests: pass (10).
 - `npm run build`: pass.
 - Live NVDA run: pass using FY2026 SEC facts and 2026-10-19 market price.
 - Live AAPL and JPM cross-sector runs: pass with SEC-validated peers and no failed workflow steps.
+- Live XNDU run: pass using an F-1 plus 6-K TTM basis and quantum peers.
+- Live QNT run: pass using annualized 10-Q interim figures, aggregated share classes, and Low confidence.
 - Browser review: pass at desktop and 390 x 844.
 - Sidebar scroll sync: pass for Conclusion, Financials, Risks, and the bottom-of-page Sources state.
 - private design source semantic screen check: pass; 61 editable desktop text layers and a design-system instance.

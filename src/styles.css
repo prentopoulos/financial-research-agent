@@ -108,6 +108,9 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .financial-grid span { font: 600 11px/1 "DM Sans", sans-serif; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
 .financial-grid strong { margin: auto 0 10px; font: 400 34px/1 "Instrument Serif", serif; }
 .financial-grid small { color: var(--muted); font-size: 11px; }
+.basis-note { grid-column: 2 / -1; margin: 18px 0 0; display: flex; gap: 10px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.basis-note strong { color: var(--ink); }
+.basis-note.limited { color: #6f5313; }
 
 .table-wrap { grid-column: 2 / -1; overflow-x: auto; border-top: 1px solid var(--ink); }
 .table-hint { display: none; }
@@ -199,7 +202,7 @@ tbody th small { color: var(--muted); font: 400 9px/1.2 "DM Sans", sans-serif; m
   .section-title { grid-column: 2; }
   .section-title h2 { margin-bottom: 32px; }
   .thesis-list, .financial-grid, .risk-list, .source-list { grid-column: 1 / -1; }
-  .table-wrap, .method-note { grid-column: 1 / -1; }
+  .table-wrap, .method-note, .basis-note { grid-column: 1 / -1; }
   .table-hint { display: block; grid-column: 1 / -1; margin: -20px 0 20px; color: var(--muted); font-size: 12px; }
   .financial-grid { grid-template-columns: 1fr; }
   .trace-list { grid-template-columns: 1fr; }

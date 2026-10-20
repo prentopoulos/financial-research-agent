@@ -1,6 +1,6 @@
 # Ledger
 
-Ledger is a local AI financial-research agent for SEC-reporting U.S. public companies. Enter a ticker
+Ledger is a local AI financial-research agent for SEC-reporting public companies. Enter a ticker
 and it retrieves live SEC Company Facts, the latest filing metadata, and current market history;
 calculates financial and valuation metrics in Python; validates comparable companies; and produces a
 cited research memo through a LangGraph workflow.
@@ -56,10 +56,19 @@ Then open <http://127.0.0.1:8000>.
 
 ## Which companies work?
 
-Ledger accepts a ticker from the SEC company index, including formats such as `AAPL`, `NVDA`, and
-`BRK.B`. It works best for U.S. operating companies that file 10-K/10-Q statements with comparable
-US-GAAP facts and have a Yahoo Finance price series. Funds, private companies, many foreign issuers,
-and companies with incomplete XBRL facts may return an evidence error instead of a report.
+Ledger accepts a ticker from the SEC company index, including formats such as `AAPL`, `NVDA`, `XNDU`,
+`QNT`, and `BRK.B`. The evidence engine supports:
+
+- 10-K, 20-F, and 40-F annual reporting;
+- structured annual financials from S-1, F-1, 424B3, and 424B4 prospectuses;
+- trailing-twelve-month figures from four reported quarters or annual-plus-YTD reconciliation;
+- standard US-GAAP/IFRS concepts and conservatively matched issuer-extension concepts; and
+- a recent-listing mode that annualizes the latest comparable interim period and caps confidence at Low.
+
+Annualized interim figures are calculations from reported periods, not simulated company data. The UI,
+export, method note, and trace label the exact evidence basis. Funds, private companies, issuers without
+usable consolidated XBRL facts, and symbols without a market-price series may still return an evidence
+error instead of a report.
 
 When a model is configured, it proposes two relevant peers. Every proposed ticker is resolved against
 the SEC index and its figures are independently retrieved before it can enter the comparison. Without a
@@ -85,8 +94,9 @@ flowchart LR
 ```mermaid
 flowchart TD
     A[Resolve company] --> B[Retrieve SEC and market data]
-    B --> C[Calculate GAAP fundamentals]
-    C --> D[Select candidate peers]
+    B --> C[Resolve annual, TTM, prospectus, or interim basis]
+    C --> C2[Calculate filing-derived fundamentals]
+    C2 --> D[Select candidate peers]
     D --> E[Validate peers with SEC data]
     E --> F[Calculate relative valuation]
     F --> G[Compose grounded memo]

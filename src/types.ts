@@ -8,6 +8,11 @@ export type Citation = {
 export type Financials = {
   fiscal_year: number;
   period_end: string;
+  basis: "annual" | "ttm" | "prospectus" | "interim_annualized";
+  basis_label: string;
+  source_form: string;
+  source_url: string | null;
+  limited_history: boolean;
   revenue: number | null;
   revenue_growth: number | null;
   gross_margin: number | null;

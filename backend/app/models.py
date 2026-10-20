@@ -15,6 +15,11 @@ class Citation(BaseModel):
 class Financials(BaseModel):
     fiscal_year: int
     period_end: str
+    basis: Literal["annual", "ttm", "prospectus", "interim_annualized"] = "annual"
+    basis_label: str = "Annual filing"
+    source_form: str = "10-K"
+    source_url: str | None = None
+    limited_history: bool = False
     revenue: float | None = None
     revenue_growth: float | None = None
     gross_margin: float | None = None

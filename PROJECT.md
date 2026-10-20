@@ -10,7 +10,7 @@ It is a research aid, not a trading system or personal investment adviser.
 
 ## 2. Scope
 
-Phase 1 delivers a working research MVP for SEC-reporting U.S. companies. It includes live SEC and
+Phase 1 delivers a working research MVP for SEC-reporting public companies. It includes live SEC and
 market retrieval, deterministic calculations, model-assisted and SEC-validated peer selection,
 optional grounded prose through an owner-supplied OpenAI-compatible key, report export, loading and
 error states, and optional LangSmith tracing. PostgreSQL memory, AWS, authentication, portfolios, and
