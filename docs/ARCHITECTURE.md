@@ -1,21 +1,23 @@
-# Ledger architecture
+# Ledger agent architecture
 
-One bounded graph turns a ticker into a cited report.
+One ticker enters one bounded LangGraph run. Four visible steps produce one cited report.
 
 ```mermaid
 flowchart LR
-    START((Ticker)) --> GRAPH((LangGraph))
-    GRAPH --> DATA((SEC + market))
-    DATA --> MATH((Python))
-    MATH --> PEERS((Verified peers))
-    PEERS --> END((Cited report))
-    MODEL((Optional model)) -.-> PEERS
-    MODEL -.-> END
+    IN((Ticker)) --> ORCH[LangGraph<br/>orchestrator]
+    subgraph RUN[LangGraph research run]
+        ORCH --> DATA(Evidence<br/>SEC + prices)
+        DATA --> MATH(Python<br/>math + verdict)
+        MATH --> PEERS(Peers<br/>verify tickers)
+        PEERS --> WRITE(Write<br/>cite + explain)
+    end
+    WRITE --> OUT((Cited report))
+    MODEL(Optional model) -.-> PEERS
+    MODEL -.-> WRITE
 ```
 
-- **LangGraph** moves shared research state through explicit nodes.
-- **Python** owns every figure and the valuation verdict.
-- **The model is optional:** candidate peers and prose only.
-- **The end state is auditable:** evidence basis, citations, and trace.
+- **Required path:** public evidence, Python calculations, verified peers, cited output.
+- **Optional model:** suggests peers and helps write prose; it never owns the numbers.
+- **Audit trail:** every result keeps its source, period, and retrieval time.
 
-Open the [visual architecture](ARCHITECTURE.html).
+Open the [white system map](ARCHITECTURE.html).

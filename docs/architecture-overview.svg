@@ -1,82 +1,125 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="620" viewBox="0 0 1600 620" role="img" aria-labelledby="title desc">
-  <title id="title">Ledger agentic architecture</title>
-  <desc id="desc">A ticker moves through LangGraph, public evidence retrieval, Python calculations, peer verification, and ends as a cited report. An optional model can assist with peers and prose.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Ledger agent architecture</title>
+  <desc id="desc">A ticker enters a LangGraph research run. The orchestrator routes four ordered steps: public evidence, Python analysis, peer verification, and report writing. The result is a cited report. A model may optionally assist with peers and prose.</desc>
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
-      <path d="M0 0L10 5L0 10Z" fill="#53657d"/>
+      <path d="M0 0L10 5L0 10Z" fill="#6b7c93"/>
+    </marker>
+    <marker id="arrow-soft" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0 0L9 4.5L0 9Z" fill="#98a6b8"/>
     </marker>
     <style>
-      .sans { font-family: "DM Sans", "Segoe UI", Arial, sans-serif; }
-      .serif { font-family: "Instrument Serif", Georgia, serif; }
-      .kicker { fill: #53657d; font-size: 15px; font-weight: 700; letter-spacing: 2px; }
-      .name { fill: #0e131c; font-size: 27px; }
-      .note { fill: #53657d; font-size: 15px; }
-      .step { fill: #306bd9; font-size: 13px; font-weight: 700; letter-spacing: 1px; }
+      text { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .ink { fill: #172033; }
+      .muted { fill: #66758a; }
+      .eyebrow { fill: #66758a; font-size: 13px; font-weight: 700; letter-spacing: 1.8px; }
+      .step { fill: #526175; font-size: 12px; font-weight: 700; letter-spacing: 1.2px; }
+      .label { fill: #172033; font-size: 22px; font-weight: 650; }
+      .note { fill: #66758a; font-size: 14px; }
+      .icon { fill: none; stroke: #335f9e; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     </style>
   </defs>
 
-  <rect width="1600" height="620" fill="#ffffff"/>
-  <rect x="0.5" y="0.5" width="1599" height="619" fill="none" stroke="#d9e1ec"/>
+  <rect width="1600" height="900" fill="#ffffff"/>
 
-  <g class="sans">
-    <rect x="52" y="38" width="36" height="36" fill="#0e131c"/>
-    <text x="70" y="64" text-anchor="middle" fill="#ffffff" class="serif" font-size="25">L</text>
-    <text x="106" y="62" fill="#0e131c" font-size="16" font-weight="700" letter-spacing="3">LEDGER</text>
-    <text x="1548" y="62" text-anchor="end" class="kicker">AGENTIC ARCHITECTURE</text>
-  </g>
-  <line x1="0" y1="104" x2="1600" y2="104" stroke="#d9e1ec"/>
-
-  <g fill="none" stroke="#53657d" stroke-width="2" marker-end="url(#arrow)">
-    <path d="M207 320H314"/>
-    <path d="M510 320H619"/>
-    <path d="M815 320H924"/>
-    <path d="M1120 320H1229"/>
-    <path d="M1425 320H1502"/>
+  <g>
+    <text x="72" y="82" class="ink" font-size="42" font-weight="700" letter-spacing="-1.1">Ledger agent architecture</text>
+    <text x="72" y="119" class="muted" font-size="18">One ticker in. Public evidence and deterministic analysis. One cited report out.</text>
   </g>
 
-  <g class="sans">
-    <circle cx="132" cy="320" r="75" fill="#0e131c"/>
-    <text x="132" y="307" text-anchor="middle" fill="#a9b7ca" font-size="12" font-weight="700" letter-spacing="1">START</text>
-    <text x="132" y="340" text-anchor="middle" fill="#ffffff" class="serif" font-size="30">Ticker</text>
+  <rect x="266" y="208" width="1048" height="466" rx="32" fill="#fbfcfe" stroke="#cfd8e6" stroke-width="2" stroke-dasharray="8 8"/>
+  <rect x="306" y="186" width="246" height="44" rx="22" fill="#ffffff" stroke="#cfd8e6"/>
+  <circle cx="330" cy="208" r="6" fill="#3f78c5"/>
+  <text x="348" y="213" class="eyebrow">LANGGRAPH RESEARCH RUN</text>
 
-    <circle cx="412" cy="320" r="98" fill="#edf3fc" stroke="#306bd9" stroke-width="2"/>
-    <text x="412" y="288" text-anchor="middle" class="step">ORCHESTRATE</text>
-    <text x="412" y="326" text-anchor="middle" class="name serif">LangGraph</text>
-    <text x="412" y="351" text-anchor="middle" class="note">shared state</text>
-
-    <circle cx="717" cy="320" r="98" fill="#ffffff" stroke="#0e131c" stroke-width="1.5"/>
-    <text x="717" y="288" text-anchor="middle" class="step">RETRIEVE</text>
-    <text x="717" y="326" text-anchor="middle" class="name serif">Evidence</text>
-    <text x="717" y="351" text-anchor="middle" class="note">SEC · market</text>
-
-    <circle cx="1022" cy="320" r="98" fill="#ffffff" stroke="#0e131c" stroke-width="1.5"/>
-    <text x="1022" y="288" text-anchor="middle" class="step">CALCULATE</text>
-    <text x="1022" y="326" text-anchor="middle" class="name serif">Python</text>
-    <text x="1022" y="351" text-anchor="middle" class="note">figures · verdict</text>
-
-    <circle cx="1327" cy="320" r="98" fill="#ffffff" stroke="#0e131c" stroke-width="1.5"/>
-    <text x="1327" y="288" text-anchor="middle" class="step">VERIFY</text>
-    <text x="1327" y="326" text-anchor="middle" class="name serif">Peers</text>
-    <text x="1327" y="351" text-anchor="middle" class="note">checked again</text>
-
-    <circle cx="1530" cy="320" r="68" fill="#0e131c"/>
-    <text x="1530" y="307" text-anchor="middle" fill="#a9b7ca" font-size="12" font-weight="700" letter-spacing="1">END</text>
-    <text x="1530" y="336" text-anchor="middle" fill="#ffffff" class="serif" font-size="25">Report</text>
+  <g fill="none" stroke="#6b7c93" stroke-width="2.2" marker-end="url(#arrow)">
+    <path d="M210 444H304"/>
+    <path d="M550 444H612"/>
+    <path d="M756 444H774"/>
+    <path d="M918 444H936"/>
+    <path d="M1080 444H1098"/>
+    <path d="M1242 444H1390"/>
   </g>
 
-  <g class="sans">
-    <circle cx="1327" cy="155" r="58" fill="#ffffff" stroke="#53657d" stroke-width="1.5" stroke-dasharray="7 6"/>
-    <text x="1327" y="148" text-anchor="middle" class="name serif" font-size="22">Model</text>
-    <text x="1327" y="172" text-anchor="middle" class="note" font-size="13">optional</text>
-    <path d="M1304 209L1261 240" fill="none" stroke="#53657d" stroke-width="1.5" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
-    <path d="M1370 194L1492 259" fill="none" stroke="#53657d" stroke-width="1.5" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+  <g>
+    <circle cx="128" cy="444" r="82" fill="#f4f6f9" stroke="#cfd8e6" stroke-width="2"/>
+    <path d="M105 420h46M105 432h32M105 444h40" class="icon"/>
+    <text x="128" y="478" text-anchor="middle" class="step">INPUT</text>
+    <text x="128" y="505" text-anchor="middle" class="label">Ticker</text>
   </g>
 
-  <line x1="52" y1="478" x2="1548" y2="478" stroke="#d9e1ec"/>
-  <g class="sans kicker" font-size="13">
-    <text x="52" y="528">PUBLIC DATA ONLY</text>
-    <text x="800" y="528" text-anchor="middle">PYTHON OWNS THE MATH</text>
-    <text x="1548" y="528" text-anchor="end">CITATIONS + TRACE</text>
+  <g>
+    <rect x="304" y="324" width="246" height="240" rx="28" fill="#f1f6fd" stroke="#78a5df" stroke-width="2"/>
+    <circle cx="427" cy="377" r="24" fill="#ffffff" stroke="#78a5df"/>
+    <circle cx="415" cy="377" r="4" fill="#3f78c5"/>
+    <circle cx="439" cy="365" r="4" fill="#3f78c5"/>
+    <circle cx="439" cy="389" r="4" fill="#3f78c5"/>
+    <path d="M419 375L435 367M419 379L435 387" class="icon"/>
+    <text x="427" y="426" text-anchor="middle" class="step">ORCHESTRATOR</text>
+    <text x="427" y="462" text-anchor="middle" class="ink" font-size="28" font-weight="700">LangGraph</text>
+    <text x="427" y="492" text-anchor="middle" class="note">routes shared state</text>
+    <rect x="353" y="516" width="148" height="28" rx="14" fill="#ffffff"/>
+    <text x="427" y="535" text-anchor="middle" class="muted" font-size="12">explicit nodes + edges</text>
   </g>
-  <text x="52" y="578" class="sans note">One bounded path. Every node is visible. Missing evidence stays missing.</text>
+
+  <g>
+    <text x="620" y="310" class="eyebrow">ORDERED STEPS</text>
+
+    <g>
+      <rect x="612" y="356" width="144" height="176" rx="24" fill="#f4f0ff" stroke="#d9ccf6"/>
+      <text x="634" y="383" class="step">01</text>
+      <path d="M644 409h24l9 9v28h-33zM668 409v10h9M651 430h18M651 438h14" class="icon"/>
+      <text x="634" y="478" class="label">Evidence</text>
+      <text x="634" y="504" class="note">SEC + prices</text>
+    </g>
+
+    <g>
+      <rect x="774" y="356" width="144" height="176" rx="24" fill="#ebf8f3" stroke="#bfe8d7"/>
+      <text x="796" y="383" class="step">02</text>
+      <path d="M805 414h32M805 426h32M805 438h32M814 405v42M828 405v42" class="icon"/>
+      <text x="796" y="478" class="label">Python</text>
+      <text x="796" y="504" class="note">math + verdict</text>
+    </g>
+
+    <g>
+      <rect x="936" y="356" width="144" height="176" rx="24" fill="#fff5e9" stroke="#f1d8b9"/>
+      <text x="958" y="383" class="step">03</text>
+      <circle cx="982" cy="426" r="17" class="icon"/>
+      <path d="M994 438l13 13M974 426l6 6 11-13" class="icon"/>
+      <text x="958" y="478" class="label">Peers</text>
+      <text x="958" y="504" class="note">verify tickers</text>
+    </g>
+
+    <g>
+      <rect x="1098" y="356" width="144" height="176" rx="24" fill="#edf5ff" stroke="#c6dcf7"/>
+      <text x="1120" y="383" class="step">04</text>
+      <path d="M1131 408h31l10 10v31h-41zM1162 408v11h10M1139 430h25M1139 439h20" class="icon"/>
+      <text x="1120" y="478" class="label">Write</text>
+      <text x="1120" y="504" class="note">cite + explain</text>
+    </g>
+  </g>
+
+  <g>
+    <rect x="920" y="586" width="292" height="48" rx="24" fill="#ffffff" stroke="#98a6b8" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <circle cx="946" cy="610" r="7" fill="#98a6b8"/>
+    <text x="964" y="615" class="muted" font-size="14" font-weight="600">Optional model · peers + prose only</text>
+    <path d="M1008 586V546" fill="none" stroke="#98a6b8" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#arrow-soft)"/>
+    <path d="M1168 586V546" fill="none" stroke="#98a6b8" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#arrow-soft)"/>
+  </g>
+
+  <g>
+    <circle cx="1472" cy="444" r="82" fill="#172033"/>
+    <path d="M1448 410h34l12 12v36h-46zM1482 410v13h12M1457 435h28M1457 445h22" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1472" y="490" text-anchor="middle" fill="#aebbd0" font-size="12" font-weight="700" letter-spacing="1.2">OUTPUT</text>
+    <text x="1472" y="517" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="650">Cited report</text>
+  </g>
+
+  <g>
+    <line x1="72" y1="766" x2="1528" y2="766" stroke="#d9e0ea"/>
+    <path d="M72 812h48" fill="none" stroke="#6b7c93" stroke-width="2.2" marker-end="url(#arrow)"/>
+    <text x="136" y="817" class="muted" font-size="14">required path</text>
+    <path d="M300 812h48" fill="none" stroke="#98a6b8" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#arrow-soft)"/>
+    <text x="364" y="817" class="muted" font-size="14">optional assistance</text>
+    <text x="1528" y="817" text-anchor="end" class="muted" font-size="14">Every result keeps its source, period, and retrieval time.</text>
+  </g>
 </svg>

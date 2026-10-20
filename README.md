@@ -82,8 +82,8 @@ replaced with invented values.
 
 ![Ledger research architecture overview](docs/architecture-overview.svg)
 
-One LangGraph workflow moves from a ticker to public evidence, deterministic calculations, verified
-peers, and a cited report. The model is optional and never owns the numbers.
+Read left to right: one ticker enters a LangGraph run, passes through four visible steps, and leaves
+as a cited report. The model is optional and never owns the numbers.
 
 [Read the concise architecture](docs/ARCHITECTURE.md) · [Open the standalone HTML version](docs/ARCHITECTURE.html)
 

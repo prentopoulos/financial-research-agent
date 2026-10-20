@@ -1,0 +1,9 @@
+{
+  "decisions": [
+    {
+      "area": "architecture documentation",
+      "direction": "White technical system map with generous whitespace, compact pastel modules, restrained connectors, and one numbered left-to-right execution path.",
+      "reason": "Keeps the agent workflow immediately readable and avoids promotional or AI-generated visual tropes."
+    }
+  ]
+}
