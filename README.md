@@ -1,5 +1,8 @@
 # Ledger
 
+> Evidence-first public-company research from live SEC filings and market prices, with deterministic
+> calculations and optional model-assisted writing.
+
 Ledger is a local AI financial-research agent for SEC-reporting public companies. Enter a ticker
 and it retrieves live SEC Company Facts, the latest filing metadata, and current market history;
 calculates financial and valuation metrics in Python; validates comparable companies; and produces a
@@ -77,19 +80,13 @@ replaced with invented values.
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    R[Researcher] -->|Ticker| L[Ledger]
-    SEC[SEC filings] --> L
-    MKT[Market prices] --> L
-    L --> PY[Python engine]
-    PY --> OUT[Cited report]
-    MODEL[Optional model] -. peers + prose .-> L
-```
+![Ledger research architecture overview](docs/architecture-overview.svg)
 
-Python owns every figure and the valuation verdict. The optional model sees minimized public evidence
-and can only suggest peers or write prose. See the [concise architecture](docs/ARCHITECTURE.md) or open
-the [standalone visual](docs/ARCHITECTURE.html).
+Live public data moves through one bounded workflow: resolve the company, retrieve evidence, calculate
+metrics, verify peers, and publish a cited report. Python owns every figure and the valuation verdict;
+the optional model can only suggest peers or write prose from minimized public evidence.
+
+[Read the concise architecture](docs/ARCHITECTURE.md) · [Open the standalone HTML version](docs/ARCHITECTURE.html)
 
 ## LangSmith observability
 
@@ -135,7 +132,6 @@ not call a paid model. Live smoke tests require SEC and market-network access.
 
 ## Project artifacts
 
-- [Editable private design source desktop/mobile design](PRIVATE_DESIGN_SOURCE_REMOVED)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Security and access triangle](docs/SECURITY.md)
 - [Design review](docs/DESIGN_REVIEW.md)

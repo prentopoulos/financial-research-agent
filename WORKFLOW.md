@@ -10,7 +10,7 @@ Phase work uses one OpenSpec change and one branch per phase. Read `PROJECT.md`,
 5. Implement small coherent tasks, preserving live-data and evidence contracts.
 6. Run `npm run check` and `openspec validate --all --strict`.
 7. For financial changes, run the financial-review skill and one live smoke test.
-8. For UI changes, inspect desktop and 390px mobile states and update private design source when the visual contract changes.
+8. For UI changes, inspect desktop and 390px mobile states and update the private design source when the visual contract changes.
 9. Update `HANDOFF.md` with actual behavior, evidence, and the next action.
 
 No Git remote is configured. Do not push or open PRs. If a remote is added later, phase branches

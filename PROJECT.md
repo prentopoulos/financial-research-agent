@@ -22,7 +22,7 @@ trading are deferred.
 - A live NVDA run completes without fixtures and cites the latest available SEC filing.
 - Revenue, margins, FCF, P/E, P/S, and FCF yield are computed from retrieved values.
 - Desktop and 390px mobile layouts are visually inspected.
-- Editable desktop and mobile designs exist in the linked private design source file.
+- Editable desktop and mobile design sources are maintained privately outside this repository.
 - `openspec validate --all --strict` exits successfully or reports an explicit empty-spec state.
 
 Read [AI_OPS.md](AI_OPS.md) and the
@@ -36,7 +36,7 @@ evaluation, runtime-state, monitoring, or provider changes.
 - Orchestration: LangGraph.
 - Data: SEC EDGAR Company Facts/submissions and Yahoo Finance chart data.
 - Packaging: npm lockfile, Python requirements, Dockerfile, docker-compose.
-- Design: private design source file `PRIVATE_DESIGN_SOURCE_REMOVED` with editable desktop/mobile screens.
+- Design: private editable desktop/mobile source with production tokens reflected in `src/styles.css`.
 
 Gate: `npm run check`.
 The repository is prepared for an owner-authorized GitHub remote. Follow [WORKFLOW.md](WORKFLOW.md)
@@ -68,7 +68,7 @@ Amendments require the owner, a reason, a semantic version bump, and matching co
 
 | Phase | Deliverable | Status |
 |---|---|---|
-| 1 | Live SEC/market-data MVP, responsive dashboard, private design source designs, local checks | Complete |
+| 1 | Live SEC/market-data MVP, responsive dashboard, private design source, local checks | Complete |
 | 2 | Durable run memory and evaluation corpus | Planned |
 | 3 | Production deployment design and hardened observability | Planned |
 

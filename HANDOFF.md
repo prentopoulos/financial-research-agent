@@ -18,7 +18,7 @@ Phase 1 MVP implementation is being finalized for an owner-authorized GitHub pus
 - Python financial calculations, AMD/Intel comparison, deterministic cited memo, Markdown export.
 - Loading, provider failure, trace timing, and zero-cost reporting states.
 - Scroll-synced sidebar navigation, including correct activation of the final Sources section.
-- Docker packaging and editable private design source desktop/mobile designs.
+- Docker packaging and a private editable desktop/mobile design source.
 
 ## Verification
 
@@ -32,7 +32,7 @@ Phase 1 MVP implementation is being finalized for an owner-authorized GitHub pus
 - Live QNT run: pass using annualized 10-Q interim figures, aggregated share classes, and Low confidence.
 - Browser review: pass at desktop and 390 x 844.
 - Sidebar scroll sync: pass for Conclusion, Financials, Risks, and the bottom-of-page Sources state.
-- private design source semantic screen check: pass; 61 editable desktop text layers and a design-system instance.
+- Semantic screen check: pass; desktop/mobile layouts and the design-system instance were verified.
 - Three-perspective design review: complete; accessibility, mobile navigation, export depth, error recovery, and typography findings were applied.
 
 ## Next action
