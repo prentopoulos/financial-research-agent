@@ -1,0 +1,10 @@
+services:
+  ledger:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "8000:8000"
+    environment:
+      SEC_USER_AGENT: ${SEC_USER_AGENT:-Ledger Research research@example.com}

@@ -1,0 +1,61 @@
+# Ledger architecture
+
+## Runtime components
+
+```mermaid
+flowchart LR
+    User[Researcher] --> Web[React and Vite client]
+    Web -->|POST research ticker| API[FastAPI research API]
+    API --> Graph[LangGraph workflow]
+    Graph --> SEC[SEC EDGAR]
+    Graph --> Market[Market chart API]
+    Graph --> Calc[Python financial engine]
+    Graph -. minimized public evidence .-> Model[Owner model account]
+    Graph -. optional traces .-> Smith[Owner LangSmith account]
+    Graph --> Report[Cited report and trace]
+    Report --> Web
+```
+
+## Agent responsibilities
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant API as FastAPI
+    participant Graph as LangGraph
+    participant Public as SEC + Market APIs
+    participant Python as Calculation engine
+    participant Model as BYO model
+
+    User->>API: Analyze ticker
+    API->>API: Validate ticker format
+    API->>Graph: Start bounded run
+    Graph->>Public: Resolve company and retrieve facts
+    Public-->>Graph: Public structured records
+    Graph->>Python: Calculate financials and valuation
+    Python-->>Graph: Deterministic metrics and verdict
+    opt Model key configured
+        Graph->>Model: Public company identity + minimized calculated evidence
+        Model-->>Graph: Candidate peers and JSON prose
+        Graph->>Public: Validate candidate tickers and retrieve their facts
+    end
+    Graph-->>API: Report, citations, trace, model usage
+    API-->>User: Auditable research view
+```
+
+The model never calculates financial figures or changes the verdict. Invalid model output is rejected;
+provider failure returns the deterministic memo. Candidate peers enter the table only after SEC
+resolution and independent calculation.
+
+## Data ownership
+
+| Data | Owner/source | Persistence | Sent to model |
+|---|---|---|---|
+| Ticker | User | In-memory request only | Yes, normalized |
+| Company facts | SEC | In-memory run only | Selected calculated fields only |
+| Market price | Yahoo chart endpoint | In-memory run only | Selected calculated fields only |
+| API keys | User environment | `.env`, Git-ignored | Never |
+| Report | User | Browser memory / explicit Markdown export | Model prose becomes part of report |
+| Trace | Local UI; optional LangSmith | No local database | Public run data only when enabled |
+
+The MVP has no PostgreSQL memory, trading authority, messaging capability, or background scheduler.

@@ -1,0 +1,28 @@
+schema: spec-driven
+
+context: |
+  Ledger Financial Research Agent retrieves live SEC filings and market prices, calculates
+  financial and valuation metrics in Python, compares peers, and returns a cited research memo.
+  Stack: React/Vite/TypeScript frontend; FastAPI/Pydantic/httpx backend; LangGraph orchestration.
+  Phase 1 is a local MVP for SEC-reporting U.S. companies with optional BYO model synthesis and optional LangSmith tracing.
+  AWS, PostgreSQL memory, authentication, private portfolios, and trading are deferred. Gate: npm run check.
+
+  Non-negotiables, verbatim from PROJECT.md §5:
+  - Never present generated copy or cached values as primary-source facts.
+  - Every reported figure must keep its period, unit, source, and retrieval time.
+  - Python owns calculations; language models may explain results but may not invent or recompute them.
+  - A failed or incomplete provider response must produce an explicit unavailable/error state.
+  - The product must remain a research aid and must not execute trades or present personal investment advice.
+  - No simulated company or market data may appear in product flows or verification screenshots.
+  - UI must preserve keyboard focus, semantic structure, reduced-motion behavior, and mobile readability.
+  - Never combine untrusted input, sensitive/private data, and external egress in one agent boundary; at most two may be active.
+
+rules:
+  proposal:
+    - State which PROJECT.md phase the change implements.
+    - Include non-goals and affected gates.
+  design:
+    - Trace figures and claims to provider records and calculation code.
+    - Include failure behavior, evaluation cases, and a constitution check.
+  tasks:
+    - Keep tasks independently verifiable and finish with the local gate.
