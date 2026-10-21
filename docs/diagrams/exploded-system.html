@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ledger, pulled apart</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:40px;background:#fff;color:#0e131c;font-family:'DM Sans',Arial,sans-serif}main{width:min(1200px,100%)}p{margin:0 0 8px;color:#53657d;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}h1{margin:0 0 24px;font:400 36px/1.05 'Instrument Serif',Georgia,serif}svg{display:block;width:100%;min-width:900px}</style>
+</head><body><main><p>Exploded system / Ledger</p><h1>Ledger, pulled apart</h1><svg viewBox="0 0 1000 660" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="exploded-title exploded-desc">
+<title id="exploded-title">Exploded axonometric view of Ledger</title><desc id="exploded-desc">Four separated parts show the interface, agent orchestration, deterministic analysis core, and public evidence foundation as one assembled research system.</desc>
+
+  <defs>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#d9e1ec"/></pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#66768b"/></marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#306bd9"/></marker>
+  </defs>
+
+  <style>
+    .paper{fill:#fff}.dots{fill:url(#dots);opacity:.38}.zone{fill:#f8fafc;stroke:#d9e1ec;stroke-width:1}
+    .zone-title{font:600 9px 'DM Sans',Arial,sans-serif;letter-spacing:1.8px;fill:#53657d}
+    .title{font:400 34px 'Instrument Serif',Georgia,serif;fill:#0e131c}.subtitle{font:400 12px 'DM Sans',Arial,sans-serif;fill:#53657d}
+    .node{fill:#fff;stroke:#0e131c;stroke-width:1}.node-soft{fill:#f8fafc;stroke:#9aa8ba;stroke-width:1}
+    .node-focus{fill:#edf3fc;stroke:#306bd9;stroke-width:1.4}.node-dash{fill:#fff;stroke:#9aa8ba;stroke-width:1;stroke-dasharray:5 4}
+    .tag{fill:none;stroke:#9aa8ba;stroke-width:.8}.tag-focus{fill:none;stroke:#306bd9;stroke-width:.8}
+    .tag-text{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:1px;fill:#53657d}.tag-text-focus{fill:#306bd9}
+    .node-name{font:600 13px 'DM Sans',Arial,sans-serif;fill:#0e131c}.node-sub{font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d}
+    .connector{fill:none;stroke:#66768b;stroke-width:1.15;marker-end:url(#arrow)}.connector-link{fill:none;stroke:#306bd9;stroke-width:1.25;marker-end:url(#arrow-blue)}
+    .connector-dash{fill:none;stroke:#66768b;stroke-width:1;stroke-dasharray:5 4;marker-end:url(#arrow)}
+    .edge-mask{fill:#fff}.edge-label{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:.8px;fill:#53657d;text-anchor:middle}
+    .rule{stroke:#d9e1ec;stroke-width:1}.small{font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d}.strong{font-weight:600;fill:#0e131c}
+  </style>
+<rect class="paper" width="1000" height="660"/><rect class="dots" width="1000" height="660"/>
+<style>
+  .trace{fill:none;stroke:#9aa8ba;stroke-width:.8;stroke-dasharray:4 4}.face-top{fill:#fff;stroke:#0e131c;stroke-width:1.2}.face-left{fill:#eef1f5;stroke:#0e131c;stroke-width:1.2}.face-right{fill:#d9e1ec;stroke:#0e131c;stroke-width:1.2}
+  .focus-top{fill:#edf3fc;stroke:#306bd9;stroke-width:1.4}.focus-left{fill:#c9dafa;stroke:#306bd9;stroke-width:1.2}.focus-right{fill:#9ebbef;stroke:#306bd9;stroke-width:1.2}.detail{fill:none;stroke:#66768b;stroke-width:.8}.leader{stroke:#66768b;stroke-width:.8}.dot{fill:#66768b}.focal-line{stroke:#306bd9}.focal-dot{fill:#306bd9}
+</style>
+<text x="40" y="48" class="title">Ledger, pulled apart</text><text x="40" y="72" class="subtitle">Four parts form one system. The deterministic core remains the load-bearing layer.</text>
+
+<g data-exploded data-origin="420 440" data-gap="110">
+  <line x1="300" y1="480" x2="300" y2="170" class="trace" data-role="trace"/><line x1="680" y1="550" x2="680" y2="240" class="trace" data-role="trace"/>
+
+  <g data-part="evidence" data-name="Evidence foundation" data-rect="0 0 260 120 0" data-z="0" data-t="20" data-level="0">
+    <path d="M420 420L680 550L560 610L300 480Z" class="face-top" data-role="silhouette"/><path d="M300 480L560 610L560 630L300 500Z" class="face-left"/><path d="M680 550L560 610L560 630L680 570Z" class="face-right"/>
+    <path d="M374 456L466 502L438 516L346 470ZM506 522L598 568L570 582L478 536Z" class="detail"/>
+    <g data-role="label"><circle cx="680" cy="560" r="2" class="dot"/><line x1="686" y1="560" x2="748" y2="560" class="leader" data-role="leader"/><text x="760" y="555" class="node-name" data-role="name">Evidence foundation</text><text x="760" y="573" class="node-sub">SEC EDGAR + market history</text></g>
+  </g>
+
+  <g data-part="analysis" data-name="Deterministic core" data-rect="0 0 260 120 0" data-z="110" data-t="20" data-level="1" data-focal="true">
+    <path d="M420 310L680 440L560 500L300 370Z" class="focus-top" data-role="silhouette"/><path d="M300 370L560 500L560 520L300 390Z" class="focus-left"/><path d="M680 440L560 500L560 520L680 460Z" class="focus-right"/>
+    <path d="M374 348L520 421L486 438L340 365ZM540 431L624 473L600 485L516 443Z" class="detail focal-line"/>
+    <g data-role="label"><circle cx="680" cy="450" r="2" class="focal-dot"/><line x1="686" y1="450" x2="748" y2="450" class="leader focal-line" data-role="leader"/><text x="760" y="445" class="node-name" data-role="name">Deterministic core</text><text x="760" y="463" class="node-sub" fill="#306bd9">Python metrics + verdict</text></g>
+  </g>
+
+  <g data-part="orchestration" data-name="Agent orchestration" data-rect="0 0 260 120 0" data-z="220" data-t="20" data-level="2">
+    <path d="M420 200L680 330L560 390L300 260Z" class="face-top" data-role="silhouette"/><path d="M300 260L560 390L560 410L300 280Z" class="face-left"/><path d="M680 330L560 390L560 410L680 350Z" class="face-right"/>
+    <path d="M354 251L416 282L394 293L332 262ZM438 293L500 324L478 335L416 304ZM522 335L584 366L562 377L500 346Z" class="detail"/>
+    <g data-role="label"><circle cx="680" cy="340" r="2" class="dot"/><line x1="686" y1="340" x2="748" y2="340" class="leader" data-role="leader"/><text x="760" y="335" class="node-name" data-role="name">Agent orchestration</text><text x="760" y="353" class="node-sub">three bounded LangGraph flows</text></g>
+  </g>
+
+  <g data-part="interface" data-name="Research workspace" data-rect="0 0 260 120 0" data-z="330" data-t="20" data-level="3">
+    <path d="M420 90L680 220L560 280L300 150Z" class="face-top" data-role="silhouette"/><path d="M300 150L560 280L560 300L300 170Z" class="face-left"/><path d="M680 220L560 280L560 300L680 240Z" class="face-right"/>
+    <path d="M396 116L610 223L564 246L350 139ZM382 151L470 195M486 203L552 236" class="detail"/>
+    <g data-role="label"><circle cx="680" cy="230" r="2" class="dot"/><line x1="686" y1="230" x2="748" y2="230" class="leader" data-role="leader"/><text x="760" y="225" class="node-name" data-role="name">Research workspace</text><text x="760" y="243" class="node-sub">report + conversation + export</text></g>
+  </g>
+</g>
+<line x1="40" y1="616" x2="960" y2="616" class="rule"/><text x="40" y="640" class="small strong">Assembly rule</text><text x="132" y="640" class="small">Evidence supports calculation; calculation constrains agents; agents serve the interface.</text>
+</svg></main></body></html>

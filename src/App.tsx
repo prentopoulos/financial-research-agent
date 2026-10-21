@@ -3,6 +3,7 @@ import {
   ArrowDownRight,
   BookOpen,
   Check,
+  ChevronDown,
   ChevronRight,
   Clock3,
   Download,
@@ -16,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import type { Peer, ResearchReport } from "./types";
+import { downloadResearchPdf, safeMemoCopy } from "./exportPdf";
 import { ResearchChat } from "./ResearchChat";
 
 const API = "/api";
@@ -90,12 +92,14 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState("conclusion");
   const [exportedFile, setExportedFile] = useState("");
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [railMode, setRailMode] = useState<"chat" | "trace">("chat");
   const [mobileRailOpen, setMobileRailOpen] = useState(false);
   const [chatSpotlight, setChatSpotlight] = useState(false);
   const tickerInput = useRef<HTMLInputElement>(null);
   const askButton = useRef<HTMLButtonElement>(null);
   const spotlightButton = useRef<HTMLButtonElement>(null);
+  const exportMenu = useRef<HTMLDivElement>(null);
 
   const runResearch = async (ticker: string) => {
     const clean = ticker.trim().toUpperCase();
@@ -183,6 +187,21 @@ function App() {
     };
   }, [mobileRailOpen, chatSpotlight]);
 
+  useEffect(() => {
+    if (!exportMenuOpen) return;
+    const closeMenu = (event: MouseEvent | KeyboardEvent) => {
+      if (event instanceof KeyboardEvent && event.key !== "Escape") return;
+      if (event instanceof MouseEvent && exportMenu.current?.contains(event.target as Node)) return;
+      setExportMenuOpen(false);
+    };
+    document.addEventListener("mousedown", closeMenu);
+    window.addEventListener("keydown", closeMenu);
+    return () => {
+      document.removeEventListener("mousedown", closeMenu);
+      window.removeEventListener("keydown", closeMenu);
+    };
+  }, [exportMenuOpen]);
+
   const elapsed = useMemo(
     () => report?.trace.reduce((total, step) => total + step.latency_ms, 0) ?? 0,
     [report],
@@ -193,31 +212,32 @@ function App() {
     void runResearch(query);
   };
 
-  const exportReport = () => {
+  const exportMarkdown = () => {
     if (!report) return;
+    const memo = safeMemoCopy(report);
     const lines = [
       `# ${report.company_name} (${report.ticker})`,
       `Generated ${report.generated_at} UTC`,
       "",
       `## ${report.verdict}`,
       `Confidence: ${report.confidence}`,
-      report.summary,
+      memo.summary,
       "",
       "## Financials",
       `- Evidence basis: ${report.financials.basis_label}`,
       `- Source form: ${report.financials.source_form}`,
       `- Limited reporting history: ${report.financials.limited_history ? "Yes" : "No"}`,
-      `- Revenue: ${money(report.financials.revenue, false)}`,
+      `- Revenue: ${money(report.financials.revenue)}`,
       `- Revenue growth: ${pct(report.financials.revenue_growth)}`,
       `- Gross margin: ${pct(report.financials.gross_margin)}`,
       `- Operating margin: ${pct(report.financials.operating_margin)}`,
       `- Net margin: ${pct(report.financials.net_margin)}`,
-      `- Free cash flow: ${money(report.financials.free_cash_flow, false)}`,
-      `- Cash: ${money(report.financials.cash, false)}`,
-      `- Debt: ${money(report.financials.debt, false)}`,
+      `- Free cash flow: ${money(report.financials.free_cash_flow)}`,
+      `- Cash: ${money(report.financials.cash)}`,
+      `- Debt: ${money(report.financials.debt)}`,
       "",
       "## Investment case",
-      ...report.thesis.map((item) => `- ${item}`),
+      ...memo.thesis.map((item) => `- ${item}`),
       "",
       "## Peer comparison",
       "| Company | Market cap | Revenue growth | Gross margin | P/E | P/S | FCF yield |",
@@ -225,7 +245,7 @@ function App() {
       ...report.peers.map((peer) => `| ${peer.ticker} | ${money(peer.market_cap)} | ${pct(peer.revenue_growth)} | ${pct(peer.gross_margin)} | ${multiple(peer.pe)} | ${multiple(peer.price_to_sales)} | ${pct(peer.fcf_yield)} |`),
       "",
       "## Risks",
-      ...report.risks.map((item) => `- ${item}`),
+      ...memo.risks.map((item) => `- ${item}`),
       "",
       "## Methodology",
       report.methodology,
@@ -239,7 +259,7 @@ function App() {
       "## Sources",
       ...report.citations.map((source, index) => `${index + 1}. [${source.label}](${source.url}) — ${source.source}; retrieved ${source.retrieved_at}`),
     ];
-    const url = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/markdown" }));
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/markdown;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url;
     const filename = `${report.ticker.toLowerCase()}-research-${report.generated_at.slice(0, 10)}.md`;
@@ -247,6 +267,14 @@ function App() {
     link.click();
     URL.revokeObjectURL(url);
     setExportedFile(filename);
+    setExportMenuOpen(false);
+  };
+
+  const exportPdf = async () => {
+    if (!report) return;
+    const filename = await downloadResearchPdf(report);
+    setExportedFile(filename);
+    setExportMenuOpen(false);
   };
 
   return (
@@ -304,7 +332,13 @@ function App() {
                 <span>Equity research / {report.generated_at.slice(0, 10)}</span>
                 <div className="report-actions">
                   <button ref={askButton} onClick={() => { setRailMode("chat"); setMobileRailOpen(true); }}><MessageSquareText size={15} /> Ask Ledger</button>
-                  <button onClick={exportReport}><Download size={15} /> Export memo</button>
+                  <div className="export-menu" ref={exportMenu}>
+                    <button type="button" aria-haspopup="menu" aria-expanded={exportMenuOpen} onClick={() => setExportMenuOpen((open) => !open)}><Download size={15} /> Export memo <ChevronDown size={13} /></button>
+                    {exportMenuOpen && <div className="export-options" role="menu" aria-label="Export format">
+                      <button type="button" role="menuitem" onClick={exportMarkdown}><span>Markdown</span><small>.md · editable</small></button>
+                      <button type="button" role="menuitem" onClick={() => void exportPdf()}><span>PDF</span><small>.pdf · formatted</small></button>
+                    </div>}
+                  </div>
                 </div>
               </div>
               <span className="sr-only" aria-live="polite">{exportedFile ? `Exported ${exportedFile}` : ""}</span>

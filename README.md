@@ -1,133 +1,101 @@
-# Ledger
+<p align="center">
+  <img src="docs/readme/ledger-mark.svg" alt="Ledger" width="270">
+</p>
 
-> Evidence-first public-company research from live SEC filings and market prices, with deterministic
-> calculations and optional model-assisted writing.
+<p align="center">
+  <strong>Public-company research built from live evidence, deterministic math, and cited answers.</strong><br>
+  SEC filings + market prices in. A reviewable investment memo out.
+</p>
 
-Ledger is a local AI financial-research agent for SEC-reporting public companies. Enter a ticker
-and it retrieves live SEC Company Facts, the latest filing metadata, and current market history;
-calculates financial and valuation metrics in Python; validates comparable companies; and produces a
-cited research memo through a LangGraph workflow.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.12%2B-0e131c?style=flat-square" alt="Python 3.12+">
+  <img src="https://img.shields.io/badge/Node.js-22%2B-0e131c?style=flat-square" alt="Node.js 22+">
+  <img src="https://img.shields.io/badge/data-live%20public%20sources-306bd9?style=flat-square" alt="Live public data">
+  <img src="https://img.shields.io/badge/model-bring%20your%20own-53657d?style=flat-square" alt="Bring your own model">
+</p>
 
-Each completed report opens two company-scoped conversation modes. **Report** explains the active
-report's typed financial, valuation, peer, risk, and source objects. **Explore** searches the live public
-web for current context and cites every external claim while keeping the report verdict unchanged.
-Without a model key, a clearly labelled deterministic answerer handles common Report questions without
-consuming credits; Explore requires a configured OpenAI key.
+<p align="center">
+  <img src="docs/readme/pillars.svg" alt="Ledger uses live evidence, deterministic analysis, and cited conversation" width="900">
+</p>
 
-There is no simulated company data. A configured model can choose candidate peers and write the memo,
-but Python owns every number and the valuation verdict. Without a model key, Ledger uses a transparent
-deterministic fallback and consumes no model credits.
+## Start
 
-## Run locally
-
-Prerequisites: Python 3.12+, Node.js 22+, and Git.
+Requires Python 3.12+, Node.js 22+, Git, and a real contact address for the SEC user agent.
 
 ```powershell
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd financial_research_agent
+git clone https://github.com/prentopoulos/financial-research-agent.git
+cd financial-research-agent
 Copy-Item .env.example .env
-```
-
-Open `.env` and set at least a real SEC contact identity:
-
-```dotenv
-SEC_USER_AGENT="Ledger Research your-email@example.com"
-OPENAI_API_KEY="your-provider-key"
-OPENAI_MODEL="gpt-5-mini"
-OPENAI_BASE_URL="https://api.openai.com/v1"
-MODEL_PROVIDER="OpenAI"
-```
-
-The API key belongs to **your model-provider account**. Usage and credits are billed by that provider;
-the project does not include shared keys or credits. Report generation and Report chat can use a
-provider exposing an OpenAI-compatible `/chat/completions` endpoint. Explore mode specifically uses
-OpenAI's `/responses` endpoint with the built-in `web_search` tool, so it requires the official OpenAI
-endpoint, a model that supports web search, and API permissions for Responses.
-
-Install and start:
-
-```powershell
 py -3.12 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 npm install
 npm run dev
 ```
 
-Open <http://127.0.0.1:5173>. To run without a model, leave `OPENAI_API_KEY` blank.
+Set `SEC_USER_AGENT` in `.env`, then open <http://127.0.0.1:5173>. Add your own
+`OPENAI_API_KEY` to enable model-written reports and chat. Your provider account pays for usage;
+Ledger includes no shared key or credits.
 
-Docker is also supported:
+## Research
 
-```powershell
-Copy-Item .env.example .env
-docker compose up --build
-```
+Enter a public-company ticker such as `NVDA`, `AAPL`, `XNDU`, `QNT`, or `BRK.B`. Ledger resolves the
+issuer, retrieves the latest usable filings and price history, calculates the financial profile in
+Python, verifies peers, and produces a cited report. Missing evidence lowers confidence or stops the
+run. Company data is never simulated.
 
-Then open <http://127.0.0.1:8000>.
+<p align="center">
+  <img src="docs/diagrams/research-data-flow.svg" alt="Ledger research data flow" width="900">
+</p>
 
-## Which companies work?
+Recent listings and foreign issuers are supported when usable consolidated XBRL facts and market
+history exist. Read the [architecture notes](docs/ARCHITECTURE.md) for period selection, peer
+verification, and failure behavior.
 
-Ledger accepts a ticker from the SEC company index, including formats such as `AAPL`, `NVDA`, `XNDU`,
-`QNT`, and `BRK.B`. The evidence engine supports:
+## Ask
 
-- 10-K, 20-F, and 40-F annual reporting;
-- structured annual financials from S-1, F-1, 424B3, and 424B4 prospectuses;
-- trailing-twelve-month figures from four reported quarters or annual-plus-YTD reconciliation;
-- standard US-GAAP/IFRS concepts and conservatively matched issuer-extension concepts; and
-- a recent-listing mode that annualizes the latest comparable interim period and caps confidence at Low.
+Every completed report becomes a grounded conversation.
 
-Annualized interim figures are calculations from reported periods, not simulated company data. The UI,
-export, method note, and trace label the exact evidence basis. Funds, private companies, issuers without
-usable consolidated XBRL facts, and symbols without a market-price series may still return an evidence
-error instead of a report.
+| Mode | Best for | Evidence boundary |
+|---|---|---|
+| **Report** | Figures, verdict, peers, risks, and method | The immutable verified report; no browsing |
+| **Explore** | Current news, industry shifts, and wider market context | The report plus one cited public-web search |
 
-When a model is configured, it proposes two relevant peers. Every proposed ticker is resolved against
-the SEC index and its figures are independently retrieved before it can enter the comparison. Without a
-model, Ledger uses a small SEC-industry fallback cohort. Missing peers reduce confidence; they are never
-replaced with invented values.
-
-## Ask Ledger
-
-Use **Ask Ledger** after a report completes to question the evidence already on screen. The browser
-sends only the report run ID, a public-company question, and at most eight recent turns. The server
-rebuilds a typed virtual ontology from its verified report snapshot on every turn, then validates the
-answer's evidence IDs before returning source links.
-
-Use **Expand** to move the same conversation into a focused workspace. **Return** or `Escape` restores
-the evidence rail without clearing messages, the selected mode, suggestions, or a draft question.
-
-Conversation is read-only and process-local: it has no web browser, uploads, private portfolio data,
-database writes, messages, or trading tools. Reports expire after 30 minutes, conversations reset when
-the server restarts, and each run accepts at most 24 questions. Links and common credential patterns
-are rejected before a model call.
-
-### Explore mode
-
-Switch to **Explore** when the answer needs current public information beyond the report, such as news,
-earnings commentary, industry developments, or a market narrative. The server sends the bounded
-question and a locked copy of the verified report to OpenAI's Responses API, performs one provider-hosted
-web search, and returns the answer with source links. External evidence can challenge or add context to
-the report, but it cannot rewrite the Python-calculated figures or verdict.
-
-Explore has no access to files, portfolios, accounts, messages, trades, or private memory. It rejects
-URLs and common credential patterns in questions and requires at least one valid public-web citation.
+Expand the chat to make it the workspace focus, then return to the report without losing the thread.
+Answers can cite only validated evidence links. Report mode works with OpenAI-compatible chat models;
+Explore requires OpenAI Responses with `web_search` permission.
 
 ## Architecture
 
-![Ledger research architecture overview](docs/architecture-overview.svg)
+<p align="center">
+  <img src="docs/diagrams/system-architecture.svg" alt="Ledger system architecture" width="900">
+</p>
 
-Read left to right: one ticker enters a LangGraph run, passes through four visible steps, and leaves
-as a cited report. A bounded Report graph explains that immutable report, while a separate Explore
-graph adds cited public-web context. The model never owns the numbers or verdict.
+Python owns financial calculations and the valuation verdict. LangGraph routes three workflows:
+`company-research`, `report-chat`, and `market-explore`. FastAPI enforces request boundaries, React
+renders the workspace, and the model interprets evidence without changing locked figures.
 
-[Read the concise architecture](docs/ARCHITECTURE.md) · [Open the standalone HTML version](docs/ARCHITECTURE.html)
+<p align="center">
+  <img src="docs/diagrams/exploded-system.svg" alt="Exploded axonometric view of the Ledger system" width="900">
+</p>
 
-### Platform overview
+The exploded view shows the dependency order: public evidence supports deterministic analysis,
+analysis constrains the agent workflows, and those workflows serve the research workspace.
 
-![Ledger platform overview](docs/platform-overview.svg)
+## Security
 
-## LangSmith observability
+<p align="center">
+  <img src="docs/diagrams/access-triangle-matrix.svg" alt="Ledger access-triangle security matrix" width="900">
+</p>
 
-LangSmith tracing is optional and disabled by default. To enable it for your own LangSmith account:
+Each agent session may hold at most two of these capabilities: untrusted input, sensitive data, and a
+way to send data out. Current sessions accept bounded public input and call approved HTTPS services;
+they receive no sensitive data. The runtime rejects any three-capability configuration. Read the
+[security model](docs/SECURITY.md) for the controls and extension rules.
+
+## Observe
+
+LangSmith tracing is optional. Enable it in `.env` to inspect graph steps, model calls, latency,
+verifier outcomes, and token usage for research and both chat modes.
 
 ```dotenv
 LANGSMITH_TRACING="true"
@@ -135,45 +103,20 @@ LANGSMITH_API_KEY="your-langsmith-key"
 LANGSMITH_PROJECT="ledger-financial-research"
 ```
 
-LangGraph reads these standard environment variables automatically. The repository does not include a
-LangSmith key. Review [docs/SECURITY.md](docs/SECURITY.md) before enabling tracing. LangSmith’s official
-setup uses `LANGSMITH_API_KEY` and `LANGSMITH_TRACING=true`.
+Keep tracing disabled if you extend Ledger with private data until you add the redaction and
+isolation described in the security model.
 
-Research runs appear as `company-research`, report conversations as `report-chat`, and live research
-questions as `market-explore`. Each includes workflow, ticker, report run ID, and model-configuration
-metadata so it can be filtered independently. Model calls are nested as `openai-chat-completions` or
-`openai-responses-web-search` runs with token usage when the provider returns usage data.
+## Commands
 
-## Security boundary
+| Command | Action |
+|---|---|
+| `npm run dev` | Start the API and web app |
+| `npm run check` | Typecheck, lint, test, and build |
+| `docker compose up --build` | Run the containerized app on port 8000 |
+| `python scripts/generate_docs_diagrams.py` | Rebuild the four documentation diagrams |
 
-Ledger enforces the agent access triangle: no agent step may simultaneously hold untrusted input,
-sensitive/private data, and external egress.
-
-![Ledger security boundary](docs/security-boundary.svg)
-
-The model session uses two capabilities: bounded external input and model-provider egress. Sensitive
-data access is absent. The runtime check in `backend/app/security.py` rejects a three-capability
-session. Model endpoints must use HTTPS unless they are local, secrets remain outside graph state, and
-the model has no write, messaging, trading, filesystem, or database tools. See
-[docs/SECURITY.md](docs/SECURITY.md) for the threat model and future-feature rules.
-
-## Verify
-
-```powershell
-npm run check
-openspec validate --all --strict
-```
-
-`npm run check` runs TypeScript checking, ESLint, Python unit tests, and the production build. Tests do
-not call a paid model. Live smoke tests require SEC and market-network access.
-
-## Project artifacts
-
-- [Architecture](docs/ARCHITECTURE.md)
-- [Conversational-agent research](docs/CONVERSATIONAL_AGENT_RESEARCH.md)
-- [Security and access triangle](docs/SECURITY.md)
-- [Design review](docs/DESIGN_REVIEW.md)
-- [AI operations](AI_OPS.md)
-- [Project handoff](HANDOFF.md)
+Reports export as editable Markdown or a paginated PDF with clickable evidence links. See the
+[diagram gallery](docs/ARCHITECTURE.html), [conversation design](docs/CONVERSATIONAL_AGENT_RESEARCH.md),
+and [AI operations guide](AI_OPS.md) for the full implementation notes.
 
 Ledger is a research aid, not investment advice. Verify primary filings before making a decision.

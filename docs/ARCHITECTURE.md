@@ -1,65 +1,84 @@
-# Ledger agent architecture
+# Ledger architecture
 
-One ticker enters one bounded LangGraph research run. The completed report becomes immutable context
-for separate Report and Explore conversation graphs.
+Ledger separates evidence retrieval, deterministic financial analysis, language generation, and
+conversation. This keeps the two decisions that matter most - financial calculations and the
+valuation verdict - in Python rather than in a model response.
 
-```mermaid
-flowchart LR
-    IN((Ticker)) --> ORCH[LangGraph<br/>orchestrator]
-    subgraph RUN[LangGraph research run]
-        ORCH --> DATA(Evidence<br/>SEC + prices)
-        DATA --> MATH(Python<br/>math + verdict)
-        MATH --> PEERS(Peers<br/>verify tickers)
-        PEERS --> WRITE(Write<br/>cite + explain)
-    end
-    WRITE --> OUT((Cited report))
-    MODEL(Optional model) -.-> PEERS
-    MODEL -.-> WRITE
-```
+## System boundary
 
-- **Required path:** public evidence, Python calculations, verified peers, cited output.
-- **Optional model:** suggests peers and helps write prose; it never owns the numbers.
-- **Audit trail:** every result keeps its source, period, and retrieval time.
+![Ledger system architecture](diagrams/system-architecture.svg)
 
-## Report conversation
+The browser talks only to FastAPI. FastAPI validates input, holds completed reports for 30 minutes,
+and routes work into three LangGraph workflows. External services remain outside the local runtime:
 
-```mermaid
-flowchart LR
-    Q[Public-company question] --> G[Guard<br/>scope · length · secrets · URLs]
-    R[(Server-held ResearchReport<br/>30-minute lifetime)] --> O[Virtual ontology<br/>objects · links · rules]
-    G --> O
-    O --> A[Answer<br/>one optional model call]
-    A --> V[Verify<br/>allow-listed fact IDs]
-    V --> C[Cited response]
-    V -->|invalid or provider unavailable| D[Deterministic report answerer]
-    D --> C
-```
+- SEC EDGAR and the market-price endpoint provide live public evidence.
+- OpenAI is an optional language layer for report writing and Report chat, and the required provider
+  for Explore's cited web search.
+- LangSmith receives traces only when the user enables it.
 
-The ontology is a Python projection of the verified report contract. It defines `Company`,
-`ReportRun`, `FinancialMetric`, `ValuationMetric`, `Peer`, `Claim`, and `Source` objects plus their
-links and rules. No graph database or embedding index is needed for the bounded MVP. The model has no
-tools and cannot refresh data, calculate financials, change the verdict, browse, or write externally.
+The `company-research` graph calls the Python analysis layer for period normalization, ratios,
+valuation multiples, confidence, and the final verdict. Model output is validated against the typed
+report before it can be displayed or exported.
 
-The browser sends a run ID, a question, and at most eight recent messages. It never sends an editable
-copy of the report. The server resolves citations from its own evidence map, which prevents a generated
-URL from becoming a source.
+## Exploded system view
 
-## Live market exploration
+![Exploded axonometric view of Ledger](diagrams/exploded-system.svg)
 
-```mermaid
-flowchart LR
-    Q[Public-company question] --> G[Guard<br/>scope · length · secrets · URLs]
-    R[(Immutable ResearchReport)] --> C[Locked report context]
-    G --> C
-    C --> W[OpenAI Responses API<br/>one web_search call]
-    W --> V[Source verifier<br/>valid public URLs required]
-    V --> A[Cited external answer]
-    R -. figures and verdict remain unchanged .-> A
-```
+The four physical layers show dependency rather than network traffic. Public evidence supports the
+deterministic Python core; that core constrains the three agent workflows; and the workflows serve the
+research workspace. The blue calculation layer is the load-bearing part because language generation
+cannot replace or modify its figures and verdict.
 
-Explore uses a third LangGraph workflow. It can retrieve current public web context, but it cannot
-change report objects, recalculate figures, execute trades, write to another system, or access private
-data. The API response must contain at least one valid HTTP or HTTPS source before the answer is shown.
-External sources are kept distinct from the report's evidence ledger.
+## Research data flow
 
-Open the [white system map](ARCHITECTURE.html).
+![Ledger research data flow](diagrams/research-data-flow.svg)
+
+The pipeline keeps provenance attached to the facts. Each figure records its source, reporting period,
+and retrieval time. A missing evidence path produces lower confidence or a clear error; the workflow
+does not manufacture a replacement value.
+
+The optional model can propose candidate peers and turn locked facts into readable prose. Every peer
+must still resolve through the SEC index and complete the same evidence retrieval and Python
+calculation path. The final memo, Markdown export, PDF export, and Report chat all use the validated
+`ResearchReport` snapshot.
+
+## Conversation workflows
+
+**Report chat** receives a run ID and bounded recent history. The server rebuilds a virtual ontology of
+`Company`, `ReportRun`, `FinancialMetric`, `ValuationMetric`, `Peer`, `Claim`, and `Source` objects from
+the stored snapshot. The answer validator accepts only evidence IDs present in that ontology and
+resolves links from the server-held citation map.
+
+**Explore** receives the same locked report context and one public-company question. It calls OpenAI's
+Responses API with one provider-hosted web search. The response must contain at least one valid public
+HTTP or HTTPS citation. External context cannot mutate the report, recalculate a figure, or change the
+verdict.
+
+Both workflows reject URLs and common credential patterns in user questions. Neither exposes shell,
+filesystem, database, email, portfolio, brokerage, or arbitrary HTTP tools.
+
+## Access boundary
+
+![Ledger access-triangle security matrix](diagrams/access-triangle-matrix.svg)
+
+Every live mode has bounded untrusted input and approved external egress. Sensitive-data access is
+absent, so each mode uses two of the three capabilities. `backend/app/security.py` rejects a runtime
+profile that enables all three.
+
+Any future feature that handles private portfolios, uploaded files, or persistent user memory must
+remove untrusted input or external egress from that same session, or use a reviewed one-way handoff to
+a separate boundary.
+
+## Diagram sources
+
+The four diagrams are authored as self-contained HTML with inline SVG and exported to SVG for GitHub:
+
+- [System architecture HTML](diagrams/system-architecture.html)
+- [Exploded system HTML](diagrams/exploded-system.html)
+- [Research data flow HTML](diagrams/research-data-flow.html)
+- [Access-triangle matrix HTML](diagrams/access-triangle-matrix.html)
+
+Run `py scripts/generate_docs_diagrams.py` to regenerate the HTML sources. SVG exports are produced
+with the installed `diagram-design` skill's exporter and checked with its offline self-check.
+
+[Open all four diagrams](ARCHITECTURE.html).

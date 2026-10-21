@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>From ticker to cited report</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:40px;background:#fff;color:#0e131c;font-family:'DM Sans',Arial,sans-serif}main{width:min(1200px,100%)}p{margin:0 0 8px;color:#53657d;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}h1{margin:0 0 24px;font:400 36px/1.05 'Instrument Serif',Georgia,serif}svg{display:block;width:100%;min-width:900px}</style>
+</head><body><main><p>Data flow / Ledger</p><h1>From ticker to cited report</h1><svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="flow-title flow-desc">
+<title id="flow-title">Ledger research data flow</title><desc id="flow-desc">A ticker becomes a cited report through live public evidence, normalized periods, Python calculations, peer verification, and optional model-assisted writing.</desc>
+
+  <defs>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#d9e1ec"/></pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#66768b"/></marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#306bd9"/></marker>
+  </defs>
+
+  <style>
+    .paper{fill:#fff}.dots{fill:url(#dots);opacity:.38}.zone{fill:#f8fafc;stroke:#d9e1ec;stroke-width:1}
+    .zone-title{font:600 9px 'DM Sans',Arial,sans-serif;letter-spacing:1.8px;fill:#53657d}
+    .title{font:400 34px 'Instrument Serif',Georgia,serif;fill:#0e131c}.subtitle{font:400 12px 'DM Sans',Arial,sans-serif;fill:#53657d}
+    .node{fill:#fff;stroke:#0e131c;stroke-width:1}.node-soft{fill:#f8fafc;stroke:#9aa8ba;stroke-width:1}
+    .node-focus{fill:#edf3fc;stroke:#306bd9;stroke-width:1.4}.node-dash{fill:#fff;stroke:#9aa8ba;stroke-width:1;stroke-dasharray:5 4}
+    .tag{fill:none;stroke:#9aa8ba;stroke-width:.8}.tag-focus{fill:none;stroke:#306bd9;stroke-width:.8}
+    .tag-text{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:1px;fill:#53657d}.tag-text-focus{fill:#306bd9}
+    .node-name{font:600 13px 'DM Sans',Arial,sans-serif;fill:#0e131c}.node-sub{font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d}
+    .connector{fill:none;stroke:#66768b;stroke-width:1.15;marker-end:url(#arrow)}.connector-link{fill:none;stroke:#306bd9;stroke-width:1.25;marker-end:url(#arrow-blue)}
+    .connector-dash{fill:none;stroke:#66768b;stroke-width:1;stroke-dasharray:5 4;marker-end:url(#arrow)}
+    .edge-mask{fill:#fff}.edge-label{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:.8px;fill:#53657d;text-anchor:middle}
+    .rule{stroke:#d9e1ec;stroke-width:1}.small{font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d}.strong{font-weight:600;fill:#0e131c}
+  </style>
+<rect class="paper" width="1000" height="560"/><rect class="dots" width="1000" height="560"/>
+<text x="40" y="48" class="title">From ticker to cited report</text><text x="40" y="72" class="subtitle">Every number keeps its source, reporting period, and retrieval time.</text>
+<rect x="32" y="112" width="936" height="104" fill="#f8fafc"/><rect x="32" y="216" width="936" height="136" fill="#fff"/><rect x="32" y="352" width="936" height="112" fill="#f8fafc"/>
+<line x1="32" y1="112" x2="968" y2="112" class="rule"/><line x1="32" y1="216" x2="968" y2="216" class="rule"/><line x1="32" y1="352" x2="968" y2="352" class="rule"/><line x1="32" y1="464" x2="968" y2="464" class="rule"/>
+<text x="48" y="136" class="zone-title">PUBLIC EVIDENCE</text><text x="48" y="240" class="zone-title">DETERMINISTIC ANALYSIS</text><text x="48" y="376" class="zone-title">LANGUAGE + DELIVERY</text>
+<path d="M188 168H236" class="connector-link"/><path d="M372 168H412V280H456" class="connector-link"/><path d="M592 280H636" class="connector"/><path d="M772 280H840" class="connector"/><path d="M892 312V368" class="connector"/><path d="M704 368V328H824V292H840" class="connector-dash"/><path d="M772 400H840" class="connector-dash"/>
+<rect x="194" y="151" width="36" height="14" class="edge-mask"/><text x="212" y="161" class="edge-label">LOOKUP</text><rect x="392" y="202" width="48" height="14" class="edge-mask"/><text x="416" y="212" class="edge-label">FACTS</text><rect x="598" y="263" width="32" height="14" class="edge-mask"/><text x="614" y="273" class="edge-label">RATIOS</text><rect x="784" y="352" width="48" height="14" class="edge-mask"/><text x="808" y="362" class="edge-label">VERIFIED</text>
+<g><rect x="64" y="144" width="124" height="48" rx="6" class="node-soft"/><text x="126" y="166" text-anchor="middle" class="node-name">Ticker</text><text x="126" y="182" text-anchor="middle" class="node-sub">user input</text></g>
+<g><rect x="236" y="136" width="136" height="64" rx="6" class="node"/><text x="304" y="164" text-anchor="middle" class="node-name">Retrieve</text><text x="304" y="181" text-anchor="middle" class="node-sub">SEC + market history</text><text x="304" y="194" text-anchor="middle" class="node-sub">live public endpoints</text></g>
+<g><rect x="456" y="248" width="136" height="64" rx="6" class="node"/><text x="524" y="276" text-anchor="middle" class="node-name">Normalize periods</text><text x="524" y="293" text-anchor="middle" class="node-sub">annual + quarterly facts</text><text x="524" y="306" text-anchor="middle" class="node-sub">Python</text></g>
+<g><rect x="636" y="248" width="136" height="64" rx="6" class="node-focus"/><text x="704" y="276" text-anchor="middle" class="node-name">Calculate + decide</text><text x="704" y="293" text-anchor="middle" class="node-sub">ratios + valuation verdict</text><text x="704" y="306" text-anchor="middle" class="node-sub">Python owns output</text></g>
+<g><rect x="840" y="248" width="104" height="64" rx="6" class="node"/><text x="892" y="276" text-anchor="middle" class="node-name">Verify peers</text><text x="892" y="293" text-anchor="middle" class="node-sub">resolve + retrieve</text><text x="892" y="306" text-anchor="middle" class="node-sub">no invented values</text></g>
+<g><rect x="636" y="368" width="136" height="64" rx="6" class="node-dash"/><text x="704" y="396" text-anchor="middle" class="node-name">Model writer</text><text x="704" y="413" text-anchor="middle" class="node-sub">optional prose + peers</text><text x="704" y="426" text-anchor="middle" class="node-sub">cannot alter figures</text></g>
+<g><rect x="840" y="368" width="104" height="64" rx="6" class="node-focus"/><text x="892" y="396" text-anchor="middle" class="node-name">Cited report</text><text x="892" y="413" text-anchor="middle" class="node-sub">web + MD + PDF</text><text x="892" y="426" text-anchor="middle" class="node-sub">chat-ready snapshot</text></g>
+<line x1="40" y1="496" x2="960" y2="496" class="rule"/><text x="40" y="520" class="small strong">Failure behavior</text><text x="144" y="520" class="small">Missing evidence lowers confidence or stops the report; it is never filled with simulated company data.</text>
+</svg></main></body></html>

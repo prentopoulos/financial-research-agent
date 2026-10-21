@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="arch-title arch-desc" id="system-architecture-root">
+<title id="arch-title">Ledger system architecture</title><desc id="arch-desc">Browser requests enter a local FastAPI and LangGraph runtime. Python owns financial calculations and the verdict. Public evidence, OpenAI, and optional LangSmith tracing remain external services.</desc>
+
+  <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #system-architecture-root { color: #0e131c; font-family: 'DM Sans',Arial,sans-serif; }
+      #system-architecture-root .paper { fill:#fff }
+      #system-architecture-root .dots { fill:url(#system-architecture-dots);opacity:.38 }
+      #system-architecture-root .zone { fill:#f8fafc;stroke:#d9e1ec;stroke-width:1 }
+      #system-architecture-root .zone-title { font:600 9px 'DM Sans',Arial,sans-serif;letter-spacing:1.8px;fill:#53657d }
+      #system-architecture-root .title { font:400 34px 'Instrument Serif',Georgia,serif;fill:#0e131c }
+      #system-architecture-root .subtitle { font:400 12px 'DM Sans',Arial,sans-serif;fill:#53657d }
+      #system-architecture-root .node { fill:#fff;stroke:#0e131c;stroke-width:1 }
+      #system-architecture-root .node-soft { fill:#f8fafc;stroke:#9aa8ba;stroke-width:1 }
+      #system-architecture-root .node-focus { fill:#edf3fc;stroke:#306bd9;stroke-width:1.4 }
+      #system-architecture-root .node-dash { fill:#fff;stroke:#9aa8ba;stroke-width:1;stroke-dasharray:5 4 }
+      #system-architecture-root .tag { fill:none;stroke:#9aa8ba;stroke-width:.8 }
+      #system-architecture-root .tag-focus { fill:none;stroke:#306bd9;stroke-width:.8 }
+      #system-architecture-root .tag-text { font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:1px;fill:#53657d }
+      #system-architecture-root .tag-text-focus { fill:#306bd9 }
+      #system-architecture-root .node-name { font:600 13px 'DM Sans',Arial,sans-serif;fill:#0e131c }
+      #system-architecture-root .node-sub { font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d }
+      #system-architecture-root .connector { fill:none;stroke:#66768b;stroke-width:1.15;marker-end:url(#system-architecture-arrow) }
+      #system-architecture-root .connector-link { fill:none;stroke:#306bd9;stroke-width:1.25;marker-end:url(#system-architecture-arrow-blue) }
+      #system-architecture-root .connector-dash { fill:none;stroke:#66768b;stroke-width:1;stroke-dasharray:5 4;marker-end:url(#system-architecture-arrow) }
+      #system-architecture-root .edge-mask { fill:#fff }
+      #system-architecture-root .edge-label { font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:.8px;fill:#53657d;text-anchor:middle }
+      #system-architecture-root .rule { stroke:#d9e1ec;stroke-width:1 }
+      #system-architecture-root .small { font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d }
+      #system-architecture-root .strong { font-weight:600;fill:#0e131c }</style>
+    <pattern id="system-architecture-dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#d9e1ec"/></pattern>
+    <marker id="system-architecture-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#66768b"/></marker>
+    <marker id="system-architecture-arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#306bd9"/></marker>
+  </defs>
+
+  <style>
+    .paper{fill:#fff}.dots{fill:url(#system-architecture-dots);opacity:.38}.zone{fill:#f8fafc;stroke:#d9e1ec;stroke-width:1}
+    .zone-title{font:600 9px 'DM Sans',Arial,sans-serif;letter-spacing:1.8px;fill:#53657d}
+    .title{font:400 34px 'Instrument Serif',Georgia,serif;fill:#0e131c}.subtitle{font:400 12px 'DM Sans',Arial,sans-serif;fill:#53657d}
+    .node{fill:#fff;stroke:#0e131c;stroke-width:1}.node-soft{fill:#f8fafc;stroke:#9aa8ba;stroke-width:1}
+    .node-focus{fill:#edf3fc;stroke:#306bd9;stroke-width:1.4}.node-dash{fill:#fff;stroke:#9aa8ba;stroke-width:1;stroke-dasharray:5 4}
+    .tag{fill:none;stroke:#9aa8ba;stroke-width:.8}.tag-focus{fill:none;stroke:#306bd9;stroke-width:.8}
+    .tag-text{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:1px;fill:#53657d}.tag-text-focus{fill:#306bd9}
+    .node-name{font:600 13px 'DM Sans',Arial,sans-serif;fill:#0e131c}.node-sub{font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d}
+    .connector{fill:none;stroke:#66768b;stroke-width:1.15;marker-end:url(#system-architecture-arrow)}.connector-link{fill:none;stroke:#306bd9;stroke-width:1.25;marker-end:url(#system-architecture-arrow-blue)}
+    .connector-dash{fill:none;stroke:#66768b;stroke-width:1;stroke-dasharray:5 4;marker-end:url(#system-architecture-arrow)}
+    .edge-mask{fill:#fff}.edge-label{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:.8px;fill:#53657d;text-anchor:middle}
+    .rule{stroke:#d9e1ec;stroke-width:1}.small{font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d}.strong{font-weight:600;fill:#0e131c}
+  </style>
+<rect class="paper" width="1000" height="560"/><rect class="dots" width="1000" height="560"/>
+<text x="40" y="48" class="title">A bounded research system</text><text x="40" y="72" class="subtitle">The model can explain evidence. It cannot author figures or the verdict.</text>
+<rect x="32" y="104" width="168" height="360" rx="8" class="zone"/><text x="48" y="128" class="zone-title">CLIENT</text>
+<rect x="232" y="104" width="520" height="360" rx="8" class="zone"/><text x="248" y="128" class="zone-title">LOCAL LEDGER RUNTIME</text>
+<rect x="784" y="104" width="184" height="360" rx="8" class="zone"/><text x="800" y="128" class="zone-title">PUBLIC SERVICES</text>
+
+<path d="M168 268H276" class="connector-link"/><path d="M436 184H476V172H520" class="connector"/><path d="M436 196H488V260H520" class="connector"/><path d="M436 208H500V348H520" class="connector"/>
+<path d="M808 192H736V172H688" class="connector-link"/><path d="M608 204V300H436" class="connector"/><path d="M436 332H480V188H520" class="connector-dash"/>
+<path d="M808 292H724V184H688" class="connector-dash"/><path d="M808 304H736V260H688" class="connector-link"/><path d="M808 316H748V348H688" class="connector-link"/>
+<path d="M436 212V424H808" class="connector-dash"/>
+<rect x="194" y="250" width="64" height="14" class="edge-mask"/><text x="226" y="260" class="edge-label">HTTPS JSON</text>
+<rect x="710" y="156" width="72" height="14" class="edge-mask"/><text x="746" y="166" class="edge-label">SEC + PRICES</text>
+<rect x="710" y="288" width="58" height="14" class="edge-mask"/><text x="739" y="298" class="edge-label">MODEL API</text>
+<rect x="586" y="410" width="56" height="14" class="edge-mask"/><text x="614" y="420" class="edge-label">TRACES</text>
+
+<g><rect x="56" y="232" width="112" height="72" rx="6" class="node-soft"/><rect x="66" y="242" width="28" height="13" rx="2" class="tag"/><text x="80" y="252" text-anchor="middle" class="tag-text">USER</text><text x="112" y="275" text-anchor="middle" class="node-name">Browser</text><text x="112" y="291" text-anchor="middle" class="node-sub">React dashboard</text></g>
+<g><rect x="276" y="164" width="160" height="64" rx="6" class="node-focus"/><rect x="286" y="174" width="32" height="13" rx="2" class="tag-focus"/><text x="302" y="184" text-anchor="middle" class="tag-text tag-text-focus">API</text><text x="356" y="199" text-anchor="middle" class="node-name">FastAPI gateway</text><text x="356" y="215" text-anchor="middle" class="node-sub">guards + run store</text></g>
+<g><rect x="276" y="300" width="160" height="64" rx="6" class="node"/><rect x="286" y="310" width="44" height="13" rx="2" class="tag"/><text x="308" y="320" text-anchor="middle" class="tag-text">CODE</text><text x="356" y="335" text-anchor="middle" class="node-name">Python analysis</text><text x="356" y="351" text-anchor="middle" class="node-sub">metrics + verdict</text></g>
+<g><rect x="520" y="140" width="168" height="64" rx="6" class="node"/><text x="604" y="171" text-anchor="middle" class="node-name">Research graph</text><text x="604" y="188" text-anchor="middle" class="node-sub">retrieve + compare + write</text></g>
+<g><rect x="520" y="228" width="168" height="64" rx="6" class="node"/><text x="604" y="259" text-anchor="middle" class="node-name">Report chat</text><text x="604" y="276" text-anchor="middle" class="node-sub">verified snapshot only</text></g>
+<g><rect x="520" y="316" width="168" height="64" rx="6" class="node"/><text x="604" y="347" text-anchor="middle" class="node-name">Explore graph</text><text x="604" y="364" text-anchor="middle" class="node-sub">one cited web search</text></g>
+<g><rect x="808" y="152" width="136" height="80" rx="6" class="node-soft"/><text x="876" y="184" text-anchor="middle" class="node-name">Evidence APIs</text><text x="876" y="202" text-anchor="middle" class="node-sub">SEC EDGAR + prices</text><text x="876" y="217" text-anchor="middle" class="node-sub">public, live</text></g>
+<g><rect x="808" y="272" width="136" height="64" rx="6" class="node-soft"/><text x="876" y="302" text-anchor="middle" class="node-name">OpenAI</text><text x="876" y="319" text-anchor="middle" class="node-sub">optional language layer</text></g>
+<g><rect x="808" y="392" width="136" height="64" rx="6" class="node-dash"/><text x="876" y="421" text-anchor="middle" class="node-name">LangSmith</text><text x="876" y="438" text-anchor="middle" class="node-sub">optional observability</text></g>
+<line x1="40" y1="496" x2="960" y2="496" class="rule"/><text x="40" y="520" class="small strong">Ownership rule</text><text x="136" y="520" class="small">Python calculates. LangGraph routes. Models interpret. Sources prove.</text>
+</svg>
