@@ -9,7 +9,7 @@ capabilities.
 2. Sensitive/private data or secrets.
 3. A communication path that can send data out.
 
-![Ledger security boundary](security-boundary.svg)
+![Ledger access-triangle security matrix](diagrams/access-triangle-matrix.svg)
 
 Ledger’s model step is declared as:
 

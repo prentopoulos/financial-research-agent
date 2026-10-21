@@ -37,19 +37,11 @@ Structured output constrains shape, not truth. OpenAI's API documentation says t
 
 ## Proposed MVP architecture
 
-```mermaid
-flowchart LR
-    Q[User question] --> G[Local scope and input guard]
-    G --> C[Context builder]
-    R[(Selected ResearchReport snapshot)] --> C
-    O[Research ontology<br/>objects · links · rules] --> C
-    C --> L[Configured model<br/>no tools]
-    M[Thread-scoped recent messages] --> C
-    L --> V[Deterministic answer validator]
-    V -->|valid evidence refs| A[Cited answer]
-    V -->|unknown refs or unsupported shape| F[Explicit unable-to-answer state]
-    A --> M
-```
+![Ledger system architecture](diagrams/system-architecture.svg)
+
+The system view shows where the conversation modes sit beside the research graph and which external
+services they can reach. Report chat uses the verified snapshot only. Explore adds one cited public-web
+search while the Python-owned figures and verdict remain immutable.
 
 The graph can use four nodes: `guard_question`, `build_context`, `generate_answer`, and `verify_answer`. The context builder should run on every turn and should read a server-held report snapshot by `run_id`. The browser should send `run_id`, `thread_id`, and the question, not an editable copy of the financial evidence.
 

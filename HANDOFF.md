@@ -23,6 +23,9 @@ Phase 1 MVP is implemented and published to the owner's private GitHub repositor
 - Separate Explore mode using one OpenAI Responses web search, validated public citations, a locked
   report verdict, and independently filterable LangSmith traces.
 - Expandable chat spotlight with Return and Escape controls that preserves the active conversation.
+- Markdown and formatted PDF exports with a shared legacy-prose guard and clickable PDF sources.
+- Branded system-architecture, research-data-flow, and access-triangle diagrams with self-contained
+  HTML sources, SVG documentation exports, and a regenerated README.
 - Docker packaging and a private editable desktop/mobile design source.
 
 ## Verification
@@ -31,6 +34,9 @@ Phase 1 MVP is implemented and published to the owner's private GitHub repositor
 - `npm run lint`: pass.
 - Python unit tests: pass (21).
 - `npm run build`: pass.
+- Diagram Design self-check: pass for all three HTML/SVG diagrams.
+- PDF visual review: pass across all three pages; headings, list items, margins, links, and the evidence
+  appendix render without overlap or orphaned sections.
 - Live NVDA run: pass using FY2026 SEC facts and 2026-10-19 market price.
 - Live AAPL and JPM cross-sector runs: pass with SEC-validated peers and no failed workflow steps.
 - Live XNDU run: pass using an F-1 plus 6-K TTM basis and quantum peers.

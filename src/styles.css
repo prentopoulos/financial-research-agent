@@ -76,6 +76,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .report-kicker { display: flex; justify-content: space-between; align-items: center; margin-bottom: clamp(62px, 9vw, 124px); color: var(--muted); font: 500 11px/1 "DM Sans", sans-serif; text-transform: uppercase; letter-spacing: .07em; }
 .report-kicker button { min-height: 44px; border: 0; background: none; display: flex; gap: 8px; align-items: center; cursor: pointer; color: var(--ink); text-transform: uppercase; font: 600 11px/1 "DM Sans", sans-serif; letter-spacing: .04em; }
 .report-actions { display: flex; align-items: center; gap: 18px; }
+.export-menu { position: relative; }
+.export-options { position: absolute; top: calc(100% + 8px); right: 0; z-index: 30; width: 190px; border: 1px solid var(--ink); background: var(--paper); }
+.report-actions .export-options button { width: 100%; min-height: 54px; padding: 10px 12px; border: 0; border-bottom: 1px solid var(--line); display: grid; justify-content: stretch; gap: 5px; text-align: left; background: var(--paper); }
+.report-actions .export-options button:last-child { border-bottom: 0; }
+.report-actions .export-options button:hover { background: var(--blue-soft); }
+.export-options span { color: var(--ink); font-size: 11px; }
+.export-options small { color: var(--muted); font-size: 9px; font-weight: 400; letter-spacing: .03em; text-transform: none; }
 .company-name { font: 600 13px/1 "DM Sans", sans-serif; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 22px; }
 .report-head h1 { font: 400 clamp(60px, 7.8vw, 112px)/.84 "Instrument Serif", serif; letter-spacing: -.035em; margin: 0; max-width: 980px; }
 .report-head h1 em { color: var(--ink); font-style: normal; font-weight: 400; }
@@ -271,6 +278,8 @@ tbody th small { color: var(--muted); font: 400 9px/1.2 "DM Sans", sans-serif; m
   .report-kicker > span { max-width: 150px; line-height: 1.5; }
   .report-actions { gap: 8px; }
   .report-actions button { width: 44px; overflow: hidden; white-space: nowrap; gap: 20px; }
+  .report-actions .export-options { right: 0; width: 190px; }
+  .report-actions .export-options button { width: 100%; gap: 5px; overflow: visible; white-space: normal; }
   .report-head h1 { font-size: clamp(51px, 16vw, 72px); }
   .verdict-line { grid-template-columns: 12px 1fr; margin-top: 38px; }
   .verdict-line > div { grid-column: 2; border-left: 0; padding: 14px 0 0; border-top: 1px solid var(--line); }
