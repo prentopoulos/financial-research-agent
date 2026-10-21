@@ -1,7 +1,7 @@
 # Ledger agent architecture
 
-One ticker enters one bounded LangGraph research run. The completed report becomes the immutable
-context for a separate, read-only conversation graph.
+One ticker enters one bounded LangGraph research run. The completed report becomes immutable context
+for separate Report and Explore conversation graphs.
 
 ```mermaid
 flowchart LR
@@ -43,5 +43,23 @@ tools and cannot refresh data, calculate financials, change the verdict, browse,
 The browser sends a run ID, a question, and at most eight recent messages. It never sends an editable
 copy of the report. The server resolves citations from its own evidence map, which prevents a generated
 URL from becoming a source.
+
+## Live market exploration
+
+```mermaid
+flowchart LR
+    Q[Public-company question] --> G[Guard<br/>scope · length · secrets · URLs]
+    R[(Immutable ResearchReport)] --> C[Locked report context]
+    G --> C
+    C --> W[OpenAI Responses API<br/>one web_search call]
+    W --> V[Source verifier<br/>valid public URLs required]
+    V --> A[Cited external answer]
+    R -. figures and verdict remain unchanged .-> A
+```
+
+Explore uses a third LangGraph workflow. It can retrieve current public web context, but it cannot
+change report objects, recalculate figures, execute trades, write to another system, or access private
+data. The API response must contain at least one valid HTTP or HTTPS source before the answer is shown.
+External sources are kept distinct from the report's evidence ledger.
 
 Open the [white system map](ARCHITECTURE.html).

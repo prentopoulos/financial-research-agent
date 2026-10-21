@@ -5,8 +5,10 @@ import os
 import re
 from dataclasses import dataclass
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
+from langsmith import trace
 
 from .settings import load_local_env
 from .security import PUBLIC_RESEARCH_MODEL_BOUNDARY, validate_model_endpoint
@@ -44,6 +46,61 @@ class ModelError(RuntimeError):
     pass
 
 
+def extract_web_answer(body: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
+    """Extract response text and deduplicated URL citations from the Responses API."""
+    text_parts: list[str] = []
+    sources: list[dict[str, str]] = []
+    seen_urls: set[str] = set()
+
+    def add_source(raw: dict[str, Any]) -> int | None:
+        nested = raw.get("url_citation") if isinstance(raw.get("url_citation"), dict) else raw
+        url = str(nested.get("url") or "").strip()
+        parsed = urlparse(url)
+        if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+            return None
+        if url in seen_urls:
+            return next((index for index, source in enumerate(sources, start=1) if source["url"] == url), None)
+        title = str(nested.get("title") or raw.get("title") or parsed.hostname).strip()
+        seen_urls.add(url)
+        sources.append({"title": title[:180], "url": url})
+        return len(sources)
+
+    # Process answer text first so the numbered source rail follows citation order in the prose.
+    for item in body.get("output") or []:
+        if not isinstance(item, dict):
+            continue
+        if item.get("type") == "message":
+            for part in item.get("content") or []:
+                if not isinstance(part, dict) or part.get("type") != "output_text":
+                    continue
+                if isinstance(part.get("text"), str):
+                    def replace_link(match: re.Match[str]) -> str:
+                        source_number = add_source({"title": match.group(1), "url": match.group(2)})
+                        return f"{match.group(1)} [{source_number}]" if source_number else match.group(1)
+
+                    clean_text = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", replace_link, part["text"])
+                    text_parts.append(clean_text.strip())
+                for annotation in part.get("annotations") or []:
+                    if isinstance(annotation, dict) and annotation.get("type") == "url_citation":
+                        add_source(annotation)
+
+    # Search-result sources provide fallback provenance when a provider omits inline annotations.
+    for item in body.get("output") or []:
+        if not isinstance(item, dict):
+            continue
+        if item.get("type") == "web_search_call" and isinstance(item.get("action"), dict):
+            for source in item["action"].get("sources") or []:
+                if isinstance(source, dict):
+                    add_source(source)
+
+    answer = "\n\n".join(part for part in text_parts if part).strip()
+    if not answer:
+        raise ModelError("The public web search returned no answer text.")
+    if not sources:
+        raise ModelError("The public web search returned no verifiable URL citations.")
+    return answer, sources
+
+
 class ModelClient:
     """Small OpenAI-compatible chat client used only for peer choice and prose."""
 
@@ -71,34 +128,101 @@ class ModelClient:
         }
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
         try:
-            async with httpx.AsyncClient(timeout=45, follow_redirects=True) as client:
-                response = await client.post(f"{self.base_url}/chat/completions", headers=headers, json=payload)
+            with trace(
+                "openai-chat-completions",
+                run_type="llm",
+                inputs={"model": self.model, "request": user},
+                metadata={"ls_provider": self.provider, "ls_model_name": self.model},
+            ) as model_run:
+                async with httpx.AsyncClient(timeout=45, follow_redirects=True) as client:
+                    response = await client.post(f"{self.base_url}/chat/completions", headers=headers, json=payload)
+                if response.status_code >= 400:
+                    raise ModelError(
+                        f"Model provider returned HTTP {response.status_code}. Check the configured key, model name, and account credits."
+                    )
+
+                try:
+                    body = response.json()
+                    content = body["choices"][0]["message"]["content"]
+                    if not isinstance(content, str):
+                        raise TypeError("message content was not text")
+                    cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", content.strip(), flags=re.IGNORECASE)
+                    result = json.loads(cleaned)
+                except (KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
+                    raise ModelError("Model provider did not return the requested JSON object.") from exc
+
+                if not isinstance(result, dict):
+                    raise ModelError("Model provider returned JSON, but it was not an object.")
+
+                usage = body.get("usage") or {}
+                token_usage = TokenUsage(
+                    input_tokens=int(usage.get("prompt_tokens") or usage.get("input_tokens") or 0),
+                    output_tokens=int(usage.get("completion_tokens") or usage.get("output_tokens") or 0),
+                )
+                model_run.end(outputs={
+                    "result": result,
+                    "usage_metadata": {
+                        "input_tokens": token_usage.input_tokens,
+                        "output_tokens": token_usage.output_tokens,
+                        "total_tokens": token_usage.input_tokens + token_usage.output_tokens,
+                    },
+                })
+                return result, token_usage
         except httpx.HTTPError as exc:
             raise ModelError(f"Model provider could not be reached: {exc}") from exc
 
-        if response.status_code >= 400:
-            raise ModelError(
-                f"Model provider returned HTTP {response.status_code}. Check the configured key, model name, and account credits."
-            )
-
+    async def explore_public_web(
+        self,
+        *,
+        instructions: str,
+        request: dict[str, Any],
+    ) -> tuple[str, list[dict[str, str]], TokenUsage]:
+        if not self.enabled:
+            raise ModelError("Explore mode requires OPENAI_API_KEY.")
+        PUBLIC_RESEARCH_MODEL_BOUNDARY.enforce()
+        payload = {
+            "model": self.model,
+            "instructions": instructions,
+            "input": json.dumps(request, separators=(",", ":"), ensure_ascii=False),
+            "tools": [{"type": "web_search", "search_context_size": "medium"}],
+            "include": ["web_search_call.action.sources"],
+        }
+        headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
         try:
-            body = response.json()
-            content = body["choices"][0]["message"]["content"]
-            if not isinstance(content, str):
-                raise TypeError("message content was not text")
-            cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", content.strip(), flags=re.IGNORECASE)
-            result = json.loads(cleaned)
-        except (KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
-            raise ModelError("Model provider did not return the requested JSON object.") from exc
-
-        if not isinstance(result, dict):
-            raise ModelError("Model provider returned JSON, but it was not an object.")
-
-        usage = body.get("usage") or {}
-        return result, TokenUsage(
-            input_tokens=int(usage.get("prompt_tokens") or usage.get("input_tokens") or 0),
-            output_tokens=int(usage.get("completion_tokens") or usage.get("output_tokens") or 0),
-        )
+            with trace(
+                "openai-responses-web-search",
+                run_type="llm",
+                inputs={"model": self.model, "question": request.get("question"), "ticker": request.get("ticker")},
+                metadata={"ls_provider": self.provider, "ls_model_name": self.model, "tool": "web_search"},
+            ) as model_run:
+                async with httpx.AsyncClient(timeout=75, follow_redirects=True) as client:
+                    response = await client.post(f"{self.base_url}/responses", headers=headers, json=payload)
+                if response.status_code >= 400:
+                    raise ModelError(
+                        f"Explore mode returned HTTP {response.status_code}. Check Responses and web-search permissions, model access, and account credits."
+                    )
+                try:
+                    body = response.json()
+                    answer, sources = extract_web_answer(body)
+                except (TypeError, json.JSONDecodeError) as exc:
+                    raise ModelError("Explore mode returned an unreadable response.") from exc
+                usage = body.get("usage") or {}
+                token_usage = TokenUsage(
+                    input_tokens=int(usage.get("input_tokens") or usage.get("prompt_tokens") or 0),
+                    output_tokens=int(usage.get("output_tokens") or usage.get("completion_tokens") or 0),
+                )
+                model_run.end(outputs={
+                    "answer": answer,
+                    "source_count": len(sources),
+                    "usage_metadata": {
+                        "input_tokens": token_usage.input_tokens,
+                        "output_tokens": token_usage.output_tokens,
+                        "total_tokens": token_usage.input_tokens + token_usage.output_tokens,
+                    },
+                })
+                return answer, sources, token_usage
+        except httpx.HTTPError as exc:
+            raise ModelError(f"Explore mode could not reach the model provider: {exc}") from exc
 
     async def choose_peers(self, *, ticker: str, company_name: str, sic: str, sic_description: str) -> tuple[list[str], TokenUsage]:
         result, usage = await self.complete_json(

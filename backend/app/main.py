@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from .chat import run_report_chat
+from .explore import run_market_explore
 from .llm import ModelError
 from .models import ChatRequest, ChatResponse, ResearchReport
 from .providers import DataProviderError
@@ -54,12 +55,27 @@ async def chat(run_id: str, request: ChatRequest) -> ChatResponse:
         return await run_report_chat(report, request)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="This report session expired. Run the ticker again to continue.") from exc
-    except RuntimeError as exc:
-        raise HTTPException(status_code=429, detail=str(exc)) from exc
     except SecurityBoundaryError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except ModelError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=429, detail=str(exc)) from exc
+
+
+@app.post("/api/research/{run_id}/explore", response_model=ChatResponse)
+async def explore(run_id: str, request: ChatRequest) -> ChatResponse:
+    try:
+        report = report_store.get_for_chat(run_id)
+        return await run_market_explore(report, request)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="This report session expired. Run the ticker again to continue.") from exc
+    except SecurityBoundaryError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except ModelError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=429, detail=str(exc)) from exc
 
 
 app.mount("/", StaticFiles(directory="dist", html=True, check_dir=False), name="web")

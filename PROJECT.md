@@ -13,8 +13,9 @@ It is a research aid, not a trading system or personal investment adviser.
 Phase 1 delivers a working research MVP for SEC-reporting public companies. It includes live SEC and
 market retrieval, deterministic calculations, model-assisted and SEC-validated peer selection,
 optional grounded prose through an owner-supplied OpenAI-compatible key, report export, loading and
-error states, a report-scoped conversational analyst with verified evidence references, and optional
-LangSmith tracing. PostgreSQL memory, AWS, authentication, portfolios, and trading are deferred.
+error states, a report-scoped conversational analyst with verified evidence references, a live
+public-market Explore mode with validated citations, and optional LangSmith tracing. PostgreSQL memory,
+AWS, authentication, portfolios, and trading are deferred.
 
 ## 3. Evidence of completion
 
@@ -22,6 +23,8 @@ LangSmith tracing. PostgreSQL memory, AWS, authentication, portfolios, and tradi
 - A live NVDA run completes without fixtures and cites the latest available SEC filing.
 - Revenue, margins, FCF, P/E, P/S, and FCF yield are computed from retrieved values.
 - Desktop and 390px mobile layouts are visually inspected.
+- Report chat and live Explore return verified citations, preserve the report verdict, and create
+  independently filterable LangSmith traces when tracing is enabled.
 - Editable desktop and mobile design sources are maintained privately outside this repository.
 - `openspec validate --all --strict` exits successfully or reports an explicit empty-spec state.
 

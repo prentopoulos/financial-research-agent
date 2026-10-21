@@ -1,0 +1,31 @@
+name: ledger-market-explore
+version: ledger-explore-v1
+endpoint: OpenAI Responses API
+model_env: OPENAI_MODEL
+tool:
+  type: web_search
+  calls_per_question: 1
+limits:
+  question_characters: 600
+  recent_messages: 8
+  answer_characters: 3000
+  returned_sources: 8
+  timeout_seconds: 75
+memory:
+  durable: false
+  source: browser_supplied_recent_turns
+security:
+  untrusted_input: true
+  external_egress: true
+  sensitive_data: false
+  rejects_urls_in_questions: true
+  rejects_common_secret_patterns: true
+  write_tools: false
+invariants:
+  - Report figures remain immutable.
+  - The deterministic report verdict remains immutable.
+  - At least one valid HTTP or HTTPS citation is required.
+  - External sources remain distinct from report evidence.
+observability:
+  root_run: market-explore
+  model_run: openai-responses-web-search

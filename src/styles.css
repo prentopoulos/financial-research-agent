@@ -162,6 +162,11 @@ tbody th small { color: var(--muted); font: 400 9px/1.2 "DM Sans", sans-serif; m
 .model-note, .disclaimer { margin: 18px 0 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
 
 .research-chat { min-height: calc(100vh - 158px); display: flex; flex-direction: column; }
+.chat-mode-switch { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 20px; border: 1px solid var(--ink); }
+.chat-mode-switch button { min-height: 34px; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.chat-mode-switch button + button { border-left: 1px solid var(--ink); }
+.chat-mode-switch button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.chat-mode-switch button:disabled { cursor: wait; opacity: .55; }
 .chat-intro { display: flex; align-items: start; justify-content: space-between; gap: 12px; padding-bottom: 16px; }
 .chat-intro > div { display: grid; gap: 5px; }
 .chat-intro span { color: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }

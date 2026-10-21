@@ -19,10 +19,12 @@ Ledger’s model step is declared as:
 | Sensitive data | Disabled | No user files, memory, database, private portfolio, or environment values enter graph/model state |
 | External egress | Enabled | One configured OpenAI-compatible HTTPS endpoint; no arbitrary URL or tool selection |
 
-The conversation endpoint keeps the same two-capability boundary. It accepts only a bounded
-public-company question, rejects URLs and common secret/identity patterns, reads an immutable public
-report snapshot, and exposes no tools. Chat history is supplied by the current browser, capped at eight
-messages, and is not stored on the server. The report snapshot expires after 30 minutes.
+Both conversation modes keep the same two-capability boundary. They accept only a bounded
+public-company question, reject URLs and common secret/identity patterns, and read an immutable public
+report snapshot. Report mode exposes no tools. Explore mode permits one provider-hosted public-web
+search through OpenAI's Responses API; it cannot choose an arbitrary tool or destination. Chat history
+is supplied by the current browser, capped at eight messages, and is not stored on the server. The
+report snapshot expires after 30 minutes.
 
 `backend/app/security.py` rejects any future runtime profile enabling all three. Remote model endpoints
 must use HTTPS; HTTP is allowed only for localhost model servers.
@@ -32,12 +34,16 @@ must use HTTPS; HTTP is allowed only for localhost model servers.
 - The key is read from `OPENAI_API_KEY` and used only in the Authorization header.
 - Keys and raw environment variables never enter LangGraph state, prompts, reports, or logs.
 - Model input is assembled from an allowlisted public evidence packet.
-- The model returns JSON only. Output shape, counts, and peer tickers are validated.
+- Report generation and Report chat return validated JSON. Explore returns answer text plus provider
+  citations, and the server validates every displayed source URL.
 - Peer tickers are resolved against the SEC index and recalculated from source data.
 - Python owns financial calculations and the verdict.
-- The model has no browser, shell, filesystem, email, database, trading, or write tools.
+- Report mode has no browser or tools. Explore mode has only OpenAI's provider-hosted public-web search.
+- Neither mode has shell, filesystem, email, database, trading, account, portfolio, or write tools.
 - Conversational answers must return allow-listed ontology fact IDs; unknown IDs trigger the
   deterministic report answerer rather than being rendered as evidence.
+- Explore answers must include at least one validated HTTP or HTTPS source. The report's figures and
+  verdict remain immutable and external sources are labelled separately.
 - Provider errors are filtered before being returned to the UI.
 
 ## LangSmith boundary

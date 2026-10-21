@@ -8,10 +8,11 @@ and it retrieves live SEC Company Facts, the latest filing metadata, and current
 calculates financial and valuation metrics in Python; validates comparable companies; and produces a
 cited research memo through a LangGraph workflow.
 
-Each completed report also opens a company-scoped research conversation. Questions are answered from
-the active report's typed financial, valuation, peer, risk, and source objects. A model can explain and
-connect that evidence; without a model key, a clearly labelled deterministic answerer handles common
-report questions without consuming credits.
+Each completed report opens two company-scoped conversation modes. **Report** explains the active
+report's typed financial, valuation, peer, risk, and source objects. **Explore** searches the live public
+web for current context and cites every external claim while keeping the report verdict unchanged.
+Without a model key, a clearly labelled deterministic answerer handles common Report questions without
+consuming credits; Explore requires a configured OpenAI key.
 
 There is no simulated company data. A configured model can choose candidate peers and write the memo,
 but Python owns every number and the valuation verdict. Without a model key, Ledger uses a transparent
@@ -38,9 +39,10 @@ MODEL_PROVIDER="OpenAI"
 ```
 
 The API key belongs to **your model-provider account**. Usage and credits are billed by that provider;
-the project does not include shared keys or credits. Any provider exposing an OpenAI-compatible
-`/chat/completions` endpoint can be used by changing `OPENAI_BASE_URL`, `OPENAI_MODEL`, and
-`MODEL_PROVIDER`.
+the project does not include shared keys or credits. Report generation and Report chat can use a
+provider exposing an OpenAI-compatible `/chat/completions` endpoint. Explore mode specifically uses
+OpenAI's `/responses` endpoint with the built-in `web_search` tool, so it requires the official OpenAI
+endpoint, a model that supports web search, and API permissions for Responses.
 
 Install and start:
 
@@ -95,13 +97,24 @@ database writes, messages, or trading tools. Reports expire after 30 minutes, co
 the server restarts, and each run accepts at most 24 questions. Links and common credential patterns
 are rejected before a model call.
 
+### Explore mode
+
+Switch to **Explore** when the answer needs current public information beyond the report, such as news,
+earnings commentary, industry developments, or a market narrative. The server sends the bounded
+question and a locked copy of the verified report to OpenAI's Responses API, performs one provider-hosted
+web search, and returns the answer with source links. External evidence can challenge or add context to
+the report, but it cannot rewrite the Python-calculated figures or verdict.
+
+Explore has no access to files, portfolios, accounts, messages, trades, or private memory. It rejects
+URLs and common credential patterns in questions and requires at least one valid public-web citation.
+
 ## Architecture
 
 ![Ledger research architecture overview](docs/architecture-overview.svg)
 
 Read left to right: one ticker enters a LangGraph run, passes through four visible steps, and leaves
-as a cited report. A second bounded graph turns that immutable report into cited conversational
-answers. The model is optional and never owns the numbers.
+as a cited report. A bounded Report graph explains that immutable report, while a separate Explore
+graph adds cited public-web context. The model never owns the numbers or verdict.
 
 [Read the concise architecture](docs/ARCHITECTURE.md) · [Open the standalone HTML version](docs/ARCHITECTURE.html)
 
@@ -123,8 +136,10 @@ LangGraph reads these standard environment variables automatically. The reposito
 LangSmith key. Review [docs/SECURITY.md](docs/SECURITY.md) before enabling tracing. LangSmith’s official
 setup uses `LANGSMITH_API_KEY` and `LANGSMITH_TRACING=true`.
 
-Research runs appear as `company-research`; report conversations appear as `report-chat`. Both include
-workflow, ticker, report run ID, and model-configuration metadata so they can be filtered independently.
+Research runs appear as `company-research`, report conversations as `report-chat`, and live research
+questions as `market-explore`. Each includes workflow, ticker, report run ID, and model-configuration
+metadata so it can be filtered independently. Model calls are nested as `openai-chat-completions` or
+`openai-responses-web-search` runs with token usage when the provider returns usage data.
 
 ## Security boundary
 

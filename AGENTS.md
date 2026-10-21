@@ -14,7 +14,8 @@ when model behavior, retrieval, numerical outputs, or investment conclusions cha
 - Live market prices come from Yahoo's chart endpoint; calculations run in Python.
 - LangGraph coordinates retrieval, calculations, comparison, and memo composition.
 - Optional BYO model synthesis and optional LangSmith tracing are enabled by owner-supplied keys.
-- Completed reports support a read-only, report-scoped conversational analyst with verified evidence IDs.
+- Completed reports support a read-only Report analyst with verified evidence IDs and an isolated
+  Explore mode for cited public-web context. Neither mode can alter report calculations or verdicts.
 - AWS deployment, PostgreSQL memory, authentication, private portfolios, and trading are deferred.
 
 ## Constitution — version 1.1.0
