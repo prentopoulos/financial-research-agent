@@ -1,0 +1,22 @@
+version: ledger-chat-v1
+status: implemented
+owner: repository owner
+compatible_context: ledger-report-v1
+compatible_endpoint: OpenAI-compatible chat completions
+maximum_model_calls_per_question: 1
+maximum_history_messages: 8
+maximum_question_characters: 600
+maximum_answer_characters: 1800
+tools: []
+memory:
+  durable: false
+  client_supplied_turn_window: 8
+boundaries:
+  public_report_data_only: true
+  external_links: rejected
+  sensitive_secret_patterns: rejected
+  writes: false
+  trading: false
+verification:
+  evidence_ids_allowlisted: true
+  deterministic_fallback: true

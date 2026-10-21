@@ -8,6 +8,11 @@ and it retrieves live SEC Company Facts, the latest filing metadata, and current
 calculates financial and valuation metrics in Python; validates comparable companies; and produces a
 cited research memo through a LangGraph workflow.
 
+Each completed report also opens a company-scoped research conversation. Questions are answered from
+the active report's typed financial, valuation, peer, risk, and source objects. A model can explain and
+connect that evidence; without a model key, a clearly labelled deterministic answerer handles common
+report questions without consuming credits.
+
 There is no simulated company data. A configured model can choose candidate peers and write the memo,
 but Python owns every number and the valuation verdict. Without a model key, Ledger uses a transparent
 deterministic fallback and consumes no model credits.
@@ -78,14 +83,31 @@ the SEC index and its figures are independently retrieved before it can enter th
 model, Ledger uses a small SEC-industry fallback cohort. Missing peers reduce confidence; they are never
 replaced with invented values.
 
+## Ask Ledger
+
+Use **Ask Ledger** after a report completes to question the evidence already on screen. The browser
+sends only the report run ID, a public-company question, and at most eight recent turns. The server
+rebuilds a typed virtual ontology from its verified report snapshot on every turn, then validates the
+answer's evidence IDs before returning source links.
+
+Conversation is read-only and process-local: it has no web browser, uploads, private portfolio data,
+database writes, messages, or trading tools. Reports expire after 30 minutes, conversations reset when
+the server restarts, and each run accepts at most 24 questions. Links and common credential patterns
+are rejected before a model call.
+
 ## Architecture
 
 ![Ledger research architecture overview](docs/architecture-overview.svg)
 
 Read left to right: one ticker enters a LangGraph run, passes through four visible steps, and leaves
-as a cited report. The model is optional and never owns the numbers.
+as a cited report. A second bounded graph turns that immutable report into cited conversational
+answers. The model is optional and never owns the numbers.
 
 [Read the concise architecture](docs/ARCHITECTURE.md) · [Open the standalone HTML version](docs/ARCHITECTURE.html)
+
+### Platform overview
+
+![Ledger platform overview](docs/platform-overview.svg)
 
 ## LangSmith observability
 
@@ -106,12 +128,7 @@ setup uses `LANGSMITH_API_KEY` and `LANGSMITH_TRACING=true`.
 Ledger enforces the agent access triangle: no agent step may simultaneously hold untrusted input,
 sensitive/private data, and external egress.
 
-```mermaid
-flowchart TB
-    I[Validated public ticker and public SEC data] --> M[Model step]
-    M --> O[Configured model endpoint]
-    S[Sensitive or private data] -. blocked from this session .-> M
-```
+![Ledger security boundary](docs/security-boundary.svg)
 
 The model session uses two capabilities: bounded external input and model-provider egress. Sensitive
 data access is absent. The runtime check in `backend/app/security.py` rejects a three-capability
@@ -132,6 +149,7 @@ not call a paid model. Live smoke tests require SEC and market-network access.
 ## Project artifacts
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Conversational-agent research](docs/CONVERSATIONAL_AGENT_RESEARCH.md)
 - [Security and access triangle](docs/SECURITY.md)
 - [Design review](docs/DESIGN_REVIEW.md)
 - [AI operations](AI_OPS.md)

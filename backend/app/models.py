@@ -67,6 +67,33 @@ class ModelRun(BaseModel):
     fallback_reason: str | None = None
 
 
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=1600)
+
+
+class ChatRequest(BaseModel):
+    question: str = Field(min_length=1, max_length=600)
+    history: list[ChatMessage] = Field(default_factory=list, max_length=8)
+
+
+class ChatEvidence(BaseModel):
+    fact_id: str
+    label: str
+    value: str
+    source_ids: list[str] = Field(default_factory=list)
+
+
+class ChatResponse(BaseModel):
+    run_id: str
+    ticker: str
+    answer: str
+    evidence: list[ChatEvidence]
+    citations: list[Citation]
+    suggested_questions: list[str]
+    model: ModelRun
+
+
 class ResearchReport(BaseModel):
     run_id: str
     ticker: str

@@ -13,8 +13,8 @@ It is a research aid, not a trading system or personal investment adviser.
 Phase 1 delivers a working research MVP for SEC-reporting public companies. It includes live SEC and
 market retrieval, deterministic calculations, model-assisted and SEC-validated peer selection,
 optional grounded prose through an owner-supplied OpenAI-compatible key, report export, loading and
-error states, and optional LangSmith tracing. PostgreSQL memory, AWS, authentication, portfolios, and
-trading are deferred.
+error states, a report-scoped conversational analyst with verified evidence references, and optional
+LangSmith tracing. PostgreSQL memory, AWS, authentication, portfolios, and trading are deferred.
 
 ## 3. Evidence of completion
 

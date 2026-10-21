@@ -1,4 +1,7 @@
+import os
 import unittest
+
+os.environ["LANGSMITH_TRACING"] = "false"
 
 from backend.app.analysis import calculate_valuation, extract_financials, safe_div
 from backend.app.inline_xbrl import InlineDocument

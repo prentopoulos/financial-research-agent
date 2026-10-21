@@ -8,10 +8,13 @@ import {
   Download,
   ExternalLink,
   FileText,
+  MessageSquareText,
   Search,
   ShieldAlert,
+  X,
 } from "lucide-react";
 import type { Peer, ResearchReport } from "./types";
+import { ResearchChat } from "./ResearchChat";
 
 const API = "/api";
 const reportSections = ["conclusion", "financials", "valuation", "risks", "sources", "trace"];
@@ -85,7 +88,10 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState("conclusion");
   const [exportedFile, setExportedFile] = useState("");
+  const [railMode, setRailMode] = useState<"chat" | "trace">("chat");
+  const [mobileRailOpen, setMobileRailOpen] = useState(false);
   const tickerInput = useRef<HTMLInputElement>(null);
+  const askButton = useRef<HTMLButtonElement>(null);
 
   const runResearch = async (ticker: string) => {
     const clean = ticker.trim().toUpperCase();
@@ -98,6 +104,8 @@ function App() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.detail ?? "Research run failed.");
       setReport(payload);
+      setRailMode("chat");
+      setMobileRailOpen(false);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Research run failed.");
       setReport(null);
@@ -154,6 +162,18 @@ function App() {
       window.removeEventListener("resize", syncSectionToScroll);
     };
   }, [report]);
+
+  useEffect(() => {
+    if (!mobileRailOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileRailOpen(false);
+        askButton.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [mobileRailOpen]);
 
   const elapsed = useMemo(
     () => report?.trace.reduce((total, step) => total + step.latency_ms, 0) ?? 0,
@@ -274,7 +294,10 @@ function App() {
             <section className="report-head" id="conclusion">
               <div className="report-kicker">
                 <span>Equity research / {report.generated_at.slice(0, 10)}</span>
-                <button onClick={exportReport}><Download size={15} /> Export memo</button>
+                <div className="report-actions">
+                  <button ref={askButton} onClick={() => { setRailMode("chat"); setMobileRailOpen(true); }}><MessageSquareText size={15} /> Ask Ledger</button>
+                  <button onClick={exportReport}><Download size={15} /> Export memo</button>
+                </div>
               </div>
               <span className="sr-only" aria-live="polite">{exportedFile ? `Exported ${exportedFile}` : ""}</span>
               <p className="company-name">{report.company_name}</p>
@@ -354,25 +377,34 @@ function App() {
             </section>
           </main>
 
-          <aside className="evidence-rail" id="trace" aria-labelledby="trace-title">
-            <div className="trace-head"><FileText size={17} /><div><h2 id="trace-title">Run trace</h2><span>Public data only</span></div></div>
-            <div className="trace-list">
-              {report.trace.map((step, index) => (
-                <div key={step.name}>
-                  <span className="trace-icon">{step.status === "completed" ? <Check size={13} /> : "!"}<span className="sr-only">{step.status}</span></span>
-                  <div><strong>{step.name}</strong><p>{step.detail}</p><small><Clock3 size={11} /> {step.latency_ms} ms</small></div>
-                  {index < report.trace.length - 1 && <i />}
-                </div>
-              ))}
+          <aside className={`evidence-rail ${mobileRailOpen ? "rail-open" : ""}`} id="trace" aria-label="Research assistant and run trace">
+            <div className="rail-controls">
+              <div role="tablist" aria-label="Evidence rail">
+                <button role="tab" aria-selected={railMode === "chat"} onClick={() => setRailMode("chat")}><MessageSquareText size={14} /> Ask</button>
+                <button role="tab" aria-selected={railMode === "trace"} onClick={() => setRailMode("trace")}><FileText size={14} /> Trace</button>
+              </div>
+              <button className="rail-close" type="button" onClick={() => { setMobileRailOpen(false); askButton.current?.focus(); }} aria-label="Close research assistant"><X size={18} /></button>
             </div>
-            <div className="run-stats">
-              <span>Model<strong>{report.model.enabled ? report.model.name : "Fallback"}</strong></span>
-              <span>Model tokens<strong>{(report.model.input_tokens + report.model.output_tokens).toLocaleString()}</strong></span>
-              <span>Sources<strong>{report.citations.length}</strong></span>
-              <span>Failed steps<strong>{report.trace.filter((step) => step.status === "failed").length}</strong></span>
-            </div>
-            {report.model.fallback_reason && <p className="model-note">{report.model.fallback_reason}</p>}
-            <p className="disclaimer">Research aid, not investment advice. Verify primary filings before making a decision.</p>
+            {railMode === "chat" ? <ResearchChat key={report.run_id} report={report} focusComposer={mobileRailOpen} /> : <>
+              <div className="trace-head"><FileText size={17} /><div><h2 id="trace-title">Run trace</h2><span>Public data only</span></div></div>
+              <div className="trace-list">
+                {report.trace.map((step, index) => (
+                  <div key={step.name}>
+                    <span className="trace-icon">{step.status === "completed" ? <Check size={13} /> : "!"}<span className="sr-only">{step.status}</span></span>
+                    <div><strong>{step.name}</strong><p>{step.detail}</p><small><Clock3 size={11} /> {step.latency_ms} ms</small></div>
+                    {index < report.trace.length - 1 && <i />}
+                  </div>
+                ))}
+              </div>
+              <div className="run-stats">
+                <span>Model<strong>{report.model.enabled ? report.model.name : "Fallback"}</strong></span>
+                <span>Model tokens<strong>{(report.model.input_tokens + report.model.output_tokens).toLocaleString()}</strong></span>
+                <span>Sources<strong>{report.citations.length}</strong></span>
+                <span>Failed steps<strong>{report.trace.filter((step) => step.status === "failed").length}</strong></span>
+              </div>
+              {report.model.fallback_reason && <p className="model-note">{report.model.fallback_reason}</p>}
+              <p className="disclaimer">Research aid, not investment advice. Verify primary filings before making a decision.</p>
+            </>}
           </aside>
         </div>
       ) : null}

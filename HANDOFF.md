@@ -18,13 +18,15 @@ Phase 1 MVP implementation is being finalized for an owner-authorized GitHub pus
 - Python financial calculations, AMD/Intel comparison, deterministic cited memo, Markdown export.
 - Loading, provider failure, trace timing, and zero-cost reporting states.
 - Scroll-synced sidebar navigation, including correct activation of the final Sources section.
+- Report-scoped Ask Ledger panel with a typed virtual ontology, verified evidence IDs, source links,
+  prompt-injection/secret guards, a deterministic no-credit fallback, and ephemeral bounded memory.
 - Docker packaging and a private editable desktop/mobile design source.
 
 ## Verification
 
 - `npm run typecheck`: pass.
 - `npm run lint`: pass.
-- Python unit tests: pass (10).
+- Python unit tests: pass (16).
 - `npm run build`: pass.
 - Live NVDA run: pass using FY2026 SEC facts and 2026-10-19 market price.
 - Live AAPL and JPM cross-sector runs: pass with SEC-validated peers and no failed workflow steps.
@@ -37,4 +39,5 @@ Phase 1 MVP implementation is being finalized for an owner-authorized GitHub pus
 
 ## Next action
 
-Start Phase 2 only when durable memory, a grounded LLM provider, and an evaluation corpus are desired.
+Extend the chat to full filing-text retrieval only after chunk-level citation and injection evaluations
+are defined. Durable cross-run memory still requires authentication, retention, deletion, and isolation.

@@ -79,3 +79,20 @@ export type ResearchReport = {
   model: ModelRun;
   methodology: string;
 };
+
+export type ChatEvidence = {
+  fact_id: string;
+  label: string;
+  value: string;
+  source_ids: string[];
+};
+
+export type ChatResponse = {
+  run_id: string;
+  ticker: string;
+  answer: string;
+  evidence: ChatEvidence[];
+  citations: Citation[];
+  suggested_questions: string[];
+  model: ModelRun;
+};

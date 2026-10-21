@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Ledger platform overview</title>
+  <desc id="desc">Researchers and developers use the browser interface or FastAPI endpoint. A six-step LangGraph run produces traceable evidence, deterministic checks, citations, a report interface, and Markdown export. Configuration remains outside the run.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7a8594"/></marker>
+    <style>
+      text { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .ink { fill: #172033; }
+      .muted { fill: #697789; }
+      .small { fill: #697789; font-size: 13px; }
+      .label { fill: #172033; font-size: 16px; font-weight: 650; }
+      .group { fill: #58677b; font-size: 13px; font-weight: 700; letter-spacing: 1.2px; }
+      .line { fill: none; stroke: #7a8594; stroke-width: 2; marker-end: url(#arrow); }
+      .dash { stroke-dasharray: 7 6; }
+      .icon { fill: none; stroke: #335f9e; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect width="1600" height="1000" fill="#ffffff"/>
+  <text x="800" y="68" text-anchor="middle" class="ink" font-size="42" font-weight="650" letter-spacing="-1">Ledger platform overview</text>
+  <text x="800" y="100" text-anchor="middle" class="muted" font-size="16">Live public evidence in. Traceable research artifacts out.</text>
+
+  <rect x="448" y="132" width="806" height="186" rx="26" fill="#fdfdfe" stroke="#cfd8e6" stroke-width="1.5" stroke-dasharray="7 6"/>
+  <rect x="724" y="116" width="252" height="32" rx="16" fill="#ffffff"/>
+  <text x="850" y="138" text-anchor="middle" class="group">LANGGRAPH RUN STEPS</text>
+
+  <g>
+    <g transform="translate(484 172)"><rect width="104" height="108" rx="18" fill="#f4f0ff" stroke="#ddd2f5"/><text x="52" y="28" text-anchor="middle" class="small">01</text><circle cx="52" cy="54" r="14" class="icon"/><path d="M42 54h20M52 44v20" class="icon"/><text x="52" y="91" text-anchor="middle" class="label">Resolve</text></g>
+    <g transform="translate(610 172)"><rect width="104" height="108" rx="18" fill="#fff0f2" stroke="#f2cfd5"/><text x="52" y="28" text-anchor="middle" class="small">02</text><path d="M39 43h22l8 8v24H39zM61 43v9h8" class="icon"/><text x="52" y="91" text-anchor="middle" class="label">Retrieve</text></g>
+    <g transform="translate(736 172)"><rect width="104" height="108" rx="18" fill="#fff5e9" stroke="#f1d8b9"/><text x="52" y="28" text-anchor="middle" class="small">03</text><path d="M38 49h28M38 60h28M47 40v30M58 40v30" class="icon"/><text x="52" y="91" text-anchor="middle" class="label">Calculate</text></g>
+    <g transform="translate(862 172)"><rect width="104" height="108" rx="18" fill="#eaf8f3" stroke="#bfe8d7"/><text x="52" y="28" text-anchor="middle" class="small">04</text><circle cx="48" cy="56" r="14" class="icon"/><path d="M59 66l10 10M42 56l5 5 9-11" class="icon"/><text x="52" y="91" text-anchor="middle" class="label">Select</text></g>
+    <g transform="translate(988 172)"><rect width="104" height="108" rx="18" fill="#edf7fb" stroke="#c5e5ee"/><text x="52" y="28" text-anchor="middle" class="small">05</text><path d="M36 64l11-12 10 8 12-17M36 72h34" class="icon"/><text x="52" y="91" text-anchor="middle" class="label">Compare</text></g>
+    <g transform="translate(1114 172)"><rect width="104" height="108" rx="18" fill="#edf5ff" stroke="#c6dcf7"/><text x="52" y="28" text-anchor="middle" class="small">06</text><path d="M39 42h23l8 8v27H39zM62 42v9h8M45 61h19" class="icon"/><text x="52" y="91" text-anchor="middle" class="label">Compose</text></g>
+  </g>
+
+  <g>
+    <rect x="70" y="344" width="238" height="116" rx="20" fill="#f6f8fb" stroke="#d5dde8"/>
+    <circle cx="112" cy="388" r="16" class="icon"/><path d="M85 432c4-20 50-20 54 0M100 388h24" class="icon"/>
+    <text x="154" y="383" class="label">Research analyst</text><text x="154" y="408" class="small">uses the browser UI</text>
+    <rect x="70" y="624" width="238" height="116" rx="20" fill="#f6f8fb" stroke="#d5dde8"/>
+    <path d="M92 674l14-12M92 674l14 12M126 662l14 12-14 12" class="icon"/>
+    <text x="154" y="663" class="label">Developer</text><text x="154" y="688" class="small">calls API + runs checks</text>
+  </g>
+
+  <rect x="390" y="352" width="900" height="466" rx="26" fill="#fbfcfd" stroke="#cfd8e6" stroke-width="1.5"/>
+  <rect x="436" y="390" width="760" height="168" rx="22" fill="#f3fbfd" stroke="#a8dfe9" stroke-width="1.5"/>
+  <rect x="714" y="374" width="204" height="32" rx="16" fill="#ffffff"/>
+  <text x="816" y="396" text-anchor="middle" fill="#22899d" font-size="13" font-weight="700" letter-spacing="1">RUN + TRACE</text>
+  <g>
+    <g transform="translate(474 430)"><rect width="144" height="92" rx="18" fill="#ffffff" stroke="#d5dde8"/><path d="M54 25h36M54 35h27M54 45h32" class="icon"/><text x="72" y="69" text-anchor="middle" class="label">Shared state</text></g>
+    <g transform="translate(650 430)"><rect width="144" height="92" rx="18" fill="#ffffff" stroke="#d5dde8"/><circle cx="55" cy="34" r="6" class="icon"/><circle cx="88" cy="34" r="6" class="icon"/><path d="M61 34h21" class="icon"/><text x="72" y="69" text-anchor="middle" class="label">Step trace</text></g>
+    <g transform="translate(826 430)"><rect width="144" height="92" rx="18" fill="#ffffff" stroke="#d5dde8"/><path d="M49 25h34l12 12v22H49zM83 25v13h12" class="icon"/><text x="72" y="69" text-anchor="middle" class="label">Sources</text></g>
+    <g transform="translate(1002 430)"><rect width="144" height="92" rx="18" fill="#ffffff" stroke="#d5dde8"/><rect x="47" y="23" width="50" height="36" rx="4" class="icon"/><path d="M56 34h32M56 44h24" class="icon"/><text x="72" y="69" text-anchor="middle" class="label">Report UI</text></g>
+  </g>
+
+  <rect x="436" y="606" width="760" height="164" rx="22" fill="#f3fcf8" stroke="#bfe8d7" stroke-width="1.5"/>
+  <rect x="698" y="590" width="236" height="32" rx="16" fill="#ffffff"/>
+  <text x="816" y="612" text-anchor="middle" fill="#238466" font-size="13" font-weight="700" letter-spacing="1">EVIDENCE + CHECKS</text>
+  <rect x="484" y="638" width="664" height="46" rx="18" fill="#ddf6ea" stroke="#bfe8d7"/>
+  <text x="816" y="667" text-anchor="middle" class="label">SEC filings + market prices · source · period · retrieval time</text>
+  <g>
+    <rect x="502" y="708" width="182" height="38" rx="15" fill="#ffffff" stroke="#d5dde8"/><text x="593" y="733" text-anchor="middle" class="small">10 deterministic tests</text>
+    <rect x="725" y="708" width="182" height="38" rx="15" fill="#ffffff" stroke="#d5dde8"/><text x="816" y="733" text-anchor="middle" class="small">Live smoke check</text>
+    <rect x="948" y="708" width="182" height="38" rx="15" fill="#ffffff" stroke="#d5dde8"/><text x="1039" y="733" text-anchor="middle" class="small">Explicit failure states</text>
+  </g>
+
+  <rect x="1330" y="352" width="210" height="466" rx="24" fill="#fffdf9" stroke="#f0d5ac" stroke-width="1.5"/>
+  <text x="1435" y="388" text-anchor="middle" fill="#a66b18" font-size="13" font-weight="700" letter-spacing="1">CONFIGURATION</text>
+  <g>
+    <rect x="1360" y="430" width="150" height="84" rx="18" fill="#ffffff" stroke="#e7d8c0"/><text x="1435" y="466" text-anchor="middle" class="label">SEC identity</text><text x="1435" y="491" text-anchor="middle" class="small">required</text>
+    <rect x="1360" y="552" width="150" height="84" rx="18" fill="#ffffff" stroke="#e7d8c0"/><text x="1435" y="588" text-anchor="middle" class="label">Model env</text><text x="1435" y="613" text-anchor="middle" class="small">optional</text>
+    <rect x="1360" y="674" width="150" height="84" rx="18" fill="#ffffff" stroke="#e7d8c0"/><text x="1435" y="710" text-anchor="middle" class="label">LangSmith</text><text x="1435" y="735" text-anchor="middle" class="small">off by default</text>
+  </g>
+
+  <g class="line">
+    <path d="M308 402H390"/><path d="M308 682H390"/>
+    <path d="M518 318V352"/><path d="M664 318V352"/><path d="M810 318V352"/><path d="M956 318V352"/><path d="M1102 318V352"/>
+    <path d="M1330 474H1290"/><path d="M1330 594H1290"/><path d="M1330 716H1290"/>
+  </g>
+  <g class="line dash">
+    <path d="M816 558V606"/>
+    <path d="M816 770V824H601V862"/>
+    <path d="M816 770V862"/>
+    <path d="M816 770V824H1029V862"/>
+  </g>
+
+  <g>
+    <rect x="506" y="862" width="190" height="72" rx="18" fill="#edf5ff" stroke="#c6dcf7"/><text x="601" y="893" text-anchor="middle" class="label">Cited report</text><text x="601" y="917" text-anchor="middle" class="small">browser</text>
+    <rect x="720" y="862" width="190" height="72" rx="18" fill="#edf5ff" stroke="#c6dcf7"/><text x="815" y="893" text-anchor="middle" class="label">Markdown memo</text><text x="815" y="917" text-anchor="middle" class="small">download</text>
+    <rect x="934" y="862" width="190" height="72" rx="18" fill="#edf5ff" stroke="#c6dcf7"/><text x="1029" y="893" text-anchor="middle" class="label">Trace details</text><text x="1029" y="917" text-anchor="middle" class="small">per step</text>
+  </g>
+  <text x="70" y="952" class="muted" font-size="13">Ledger · current local MVP</text>
+</svg>

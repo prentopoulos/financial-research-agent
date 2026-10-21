@@ -9,15 +9,7 @@ capabilities.
 2. Sensitive/private data or secrets.
 3. A communication path that can send data out.
 
-```mermaid
-flowchart TD
-    I[Untrusted input] --- A[Maximum two]
-    S[Sensitive data] --- A
-    E[External egress] --- A
-    A --> R{All three enabled?}
-    R -->|Yes| X[Reject the session]
-    R -->|No| Y[Run within the declared boundary]
-```
+![Ledger security boundary](security-boundary.svg)
 
 Ledger’s model step is declared as:
 
@@ -26,6 +18,11 @@ Ledger’s model step is declared as:
 | External input | Enabled, bounded | Server ticker regex; client character filter; structured public records only |
 | Sensitive data | Disabled | No user files, memory, database, private portfolio, or environment values enter graph/model state |
 | External egress | Enabled | One configured OpenAI-compatible HTTPS endpoint; no arbitrary URL or tool selection |
+
+The conversation endpoint keeps the same two-capability boundary. It accepts only a bounded
+public-company question, rejects URLs and common secret/identity patterns, reads an immutable public
+report snapshot, and exposes no tools. Chat history is supplied by the current browser, capped at eight
+messages, and is not stored on the server. The report snapshot expires after 30 minutes.
 
 `backend/app/security.py` rejects any future runtime profile enabling all three. Remote model endpoints
 must use HTTPS; HTTP is allowed only for localhost model servers.
@@ -39,6 +36,8 @@ must use HTTPS; HTTP is allowed only for localhost model servers.
 - Peer tickers are resolved against the SEC index and recalculated from source data.
 - Python owns financial calculations and the verdict.
 - The model has no browser, shell, filesystem, email, database, trading, or write tools.
+- Conversational answers must return allow-listed ontology fact IDs; unknown IDs trigger the
+  deterministic report answerer rather than being rendered as evidence.
 - Provider errors are filtered before being returned to the UI.
 
 ## LangSmith boundary

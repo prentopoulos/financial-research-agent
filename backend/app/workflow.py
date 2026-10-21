@@ -40,6 +40,7 @@ class ResearchState(TypedDict, total=False):
     subject: dict[str, Any]
     peer_tickers: list[str]
     peers: list[dict[str, Any]]
+    peer_sources: list[dict[str, str]]
     citations: list[dict[str, Any]]
     trace: list[dict[str, Any]]
     report: dict[str, Any]
@@ -191,7 +192,11 @@ async def _peer_snapshot(client: PublicDataClient, ticker: str) -> dict[str, Any
                 financials, shares = enhanced, enhanced_shares or shares
     price, as_of = extract_market(chart)
     valuation = calculate_valuation(financials, shares, price, as_of)
-    return as_peer(ticker, company["name"], financials, valuation).model_dump()
+    return {
+        "peer": as_peer(ticker, company["name"], financials, valuation).model_dump(),
+        "ticker": ticker,
+        "cik": company["cik"],
+    }
 
 
 @timed("Compare peers")
@@ -202,11 +207,13 @@ async def compare_peers(state: ResearchState) -> ResearchState:
             *[_peer_snapshot(client, ticker) for ticker in candidates],
             return_exceptions=True,
         )
-    peers = [result for result in results if isinstance(result, dict)][:2]
+    snapshots = [result for result in results if isinstance(result, dict) and "peer" in result][:2]
+    peers = [snapshot["peer"] for snapshot in snapshots]
     rows = [state["subject"]["peer"], *peers]
     skipped = len(results) - len(peers)
     suffix = f" {skipped} candidate(s) could not be validated and were omitted." if skipped else ""
-    return {"peers": rows, "_detail": f"Compared {len(rows)} SEC-validated companies on growth, margins, earnings, sales, and cash flow.{suffix}"}
+    peer_sources = [{"ticker": snapshot["ticker"], "cik": snapshot["cik"]} for snapshot in snapshots]
+    return {"peers": rows, "peer_sources": peer_sources, "_detail": f"Compared {len(rows)} SEC-validated companies on growth, margins, earnings, sales, and cash flow.{suffix}"}
 
 
 def _latest_filing(submissions: dict[str, Any]) -> tuple[str, str, str] | None:
@@ -295,6 +302,13 @@ async def compose_report(state: ResearchState) -> ResearchState:
     financial_source = financials.get("source_url")
     if financial_source and all(citation.url != financial_source for citation in citations):
         citations.insert(0, Citation(label=f"Financial basis source ({financials['source_form']})", url=financial_source, source="U.S. Securities and Exchange Commission", retrieved_at=retrieved))
+    for peer_source in state.get("peer_sources", []):
+        peer_ticker = peer_source["ticker"]
+        peer_cik = peer_source["cik"]
+        citations.extend([
+            Citation(label=f"{peer_ticker} SEC Company Facts", url=f"https://data.sec.gov/api/xbrl/companyfacts/CIK{peer_cik}.json", source="U.S. Securities and Exchange Commission", retrieved_at=retrieved),
+            Citation(label=f"{peer_ticker} market price history", url=f"https://query1.finance.yahoo.com/v8/finance/chart/{peer_ticker}?range=1y&interval=1d", source="Yahoo Finance chart endpoint", retrieved_at=retrieved),
+        ])
 
     model_run = ModelRun(
         enabled=model_used,

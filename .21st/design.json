@@ -4,6 +4,11 @@
       "area": "architecture documentation",
       "direction": "White technical system map with generous whitespace, compact pastel modules, restrained connectors, and one numbered left-to-right execution path.",
       "reason": "Keeps the agent workflow immediately readable and avoids promotional or AI-generated visual tropes."
+    },
+    {
+      "area": "report conversation",
+      "direction": "Use the existing evidence rail as a ruled analyst workspace with Ask and Trace modes, visible ontology scope, inline evidence rows, and a full-screen mobile sheet.",
+      "reason": "Keeps conversation attached to the active report and its provenance instead of introducing a generic floating chatbot surface."
     }
   ]
 }
