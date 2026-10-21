@@ -205,5 +205,18 @@ CHAT_GRAPH = build_chat_graph()
 
 
 async def run_report_chat(report: ResearchReport, request: ChatRequest) -> ChatResponse:
-    result: dict[str, Any] = await CHAT_GRAPH.ainvoke({"report": report, "request": request})
+    result: dict[str, Any] = await CHAT_GRAPH.ainvoke(
+        {"report": report, "request": request},
+        config={
+            "run_name": "report-chat",
+            "tags": ["workflow:report-chat", f"ticker:{report.ticker}"],
+            "metadata": {
+                "workflow": "report-chat",
+                "ticker": report.ticker,
+                "report_run_id": report.run_id,
+                "history_messages": len(request.history),
+                "model_configured": ModelClient().enabled,
+            },
+        },
+    )
     return ChatResponse.model_validate(result["response"])

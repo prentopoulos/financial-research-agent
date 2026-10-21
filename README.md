@@ -123,6 +123,9 @@ LangGraph reads these standard environment variables automatically. The reposito
 LangSmith key. Review [docs/SECURITY.md](docs/SECURITY.md) before enabling tracing. LangSmith’s official
 setup uses `LANGSMITH_API_KEY` and `LANGSMITH_TRACING=true`.
 
+Research runs appear as `company-research`; report conversations appear as `report-chat`. Both include
+workflow, ticker, report run ID, and model-configuration metadata so they can be filtered independently.
+
 ## Security boundary
 
 Ledger enforces the agent access triangle: no agent step may simultaneously hold untrusted input,

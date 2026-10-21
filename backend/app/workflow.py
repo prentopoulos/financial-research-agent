@@ -367,13 +367,27 @@ GRAPH = build_graph()
 
 
 async def run_research(ticker: str) -> ResearchReport:
-    result = await GRAPH.ainvoke({
-        "ticker": ticker.upper(),
-        "run_id": str(uuid.uuid4()),
-        "trace": [],
-        "model_usage": TokenUsage(),
-        "model_used": False,
-    })
+    normalized_ticker = ticker.upper()
+    run_id = str(uuid.uuid4())
+    result = await GRAPH.ainvoke(
+        {
+            "ticker": normalized_ticker,
+            "run_id": run_id,
+            "trace": [],
+            "model_usage": TokenUsage(),
+            "model_used": False,
+        },
+        config={
+            "run_name": "company-research",
+            "tags": ["workflow:company-research", f"ticker:{normalized_ticker}"],
+            "metadata": {
+                "workflow": "company-research",
+                "ticker": normalized_ticker,
+                "report_run_id": run_id,
+                "model_configured": ModelClient().enabled,
+            },
+        },
+    )
     report = ResearchReport.model_validate(result["report"])
     report.trace = [TraceStep.model_validate(step) for step in result["trace"]]
     return report

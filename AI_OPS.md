@@ -14,7 +14,7 @@ orchestration, model behavior, evaluation, state, monitoring, or release control
 | Report conversation | Enabled | Four-node LangGraph; immutable report ontology; evidence-ID verifier; max one model call per question |
 | RAG over filings/transcripts | Deferred | Phase 2 design and evaluation required |
 | Durable memory | Deferred | PostgreSQL schema and retention policy not chosen |
-| LangSmith monitoring | Optional | Disabled by default; owner supplies key/project and enables tracing |
+| LangSmith monitoring | Optional | Disabled by default; owner supplies key/project and enables tracing. Root runs are named `company-research` and `report-chat` with ticker and report metadata. |
 | Messages or trades | Disabled | Outside constitution and current scope |
 
 ## Evaluation lanes
