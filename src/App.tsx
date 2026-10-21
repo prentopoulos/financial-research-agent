@@ -9,6 +9,8 @@ import {
   ExternalLink,
   FileText,
   MessageSquareText,
+  Maximize2,
+  Minimize2,
   Search,
   ShieldAlert,
   X,
@@ -17,7 +19,7 @@ import type { Peer, ResearchReport } from "./types";
 import { ResearchChat } from "./ResearchChat";
 
 const API = "/api";
-const reportSections = ["conclusion", "financials", "valuation", "risks", "sources", "trace"];
+const reportSections = ["conclusion", "financials", "valuation", "risks", "sources"];
 
 const money = (value: number | null, compact = true) => {
   if (value == null) return "—";
@@ -90,8 +92,10 @@ function App() {
   const [exportedFile, setExportedFile] = useState("");
   const [railMode, setRailMode] = useState<"chat" | "trace">("chat");
   const [mobileRailOpen, setMobileRailOpen] = useState(false);
+  const [chatSpotlight, setChatSpotlight] = useState(false);
   const tickerInput = useRef<HTMLInputElement>(null);
   const askButton = useRef<HTMLButtonElement>(null);
+  const spotlightButton = useRef<HTMLButtonElement>(null);
 
   const runResearch = async (ticker: string) => {
     const clean = ticker.trim().toUpperCase();
@@ -106,6 +110,7 @@ function App() {
       setReport(payload);
       setRailMode("chat");
       setMobileRailOpen(false);
+      setChatSpotlight(false);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Research run failed.");
       setReport(null);
@@ -121,7 +126,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const sectionIds = reportSections.slice(0, -1);
+    const sectionIds = reportSections;
     let animationFrame = 0;
 
     const syncSectionToScroll = () => {
@@ -129,10 +134,8 @@ function App() {
       animationFrame = requestAnimationFrame(() => {
         const pageBottom = window.scrollY + window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
-        const isCompactLayout = window.innerWidth < 1180;
-
         if (pageBottom >= documentHeight - 2) {
-          setActiveSection(isCompactLayout ? "trace" : sectionIds[sectionIds.length - 1]);
+          setActiveSection(sectionIds[sectionIds.length - 1]);
           return;
         }
 
@@ -142,11 +145,6 @@ function App() {
         for (const sectionId of sectionIds) {
           const section = document.getElementById(sectionId);
           if (section && section.getBoundingClientRect().top <= anchor) current = sectionId;
-        }
-
-        if (isCompactLayout) {
-          const trace = document.getElementById("trace");
-          if (trace && trace.getBoundingClientRect().top <= anchor) current = "trace";
         }
 
         setActiveSection((previous) => previous === current ? previous : current);
@@ -164,16 +162,26 @@ function App() {
   }, [report]);
 
   useEffect(() => {
-    if (!mobileRailOpen) return;
+    if (!mobileRailOpen && !chatSpotlight) return;
+    const previousOverflow = document.body.style.overflow;
+    if (chatSpotlight) document.body.style.overflow = "hidden";
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setMobileRailOpen(false);
-        askButton.current?.focus();
+        if (chatSpotlight) {
+          setChatSpotlight(false);
+          requestAnimationFrame(() => spotlightButton.current?.focus());
+        } else {
+          setMobileRailOpen(false);
+          askButton.current?.focus();
+        }
       }
     };
     window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [mobileRailOpen]);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [mobileRailOpen, chatSpotlight]);
 
   const elapsed = useMemo(
     () => report?.trace.reduce((total, step) => total + step.latency_ms, 0) ?? 0,
@@ -377,15 +385,27 @@ function App() {
             </section>
           </main>
 
-          <aside className={`evidence-rail ${mobileRailOpen ? "rail-open" : ""}`} id="trace" aria-label="Research assistant and run trace">
+          <aside className={`evidence-rail ${mobileRailOpen ? "rail-open" : ""} ${chatSpotlight ? "chat-spotlight" : ""}`} id="trace" aria-label={chatSpotlight ? "Research assistant spotlight" : "Research assistant and run trace"}>
             <div className="rail-controls">
               <div role="tablist" aria-label="Evidence rail">
                 <button role="tab" aria-selected={railMode === "chat"} onClick={() => setRailMode("chat")}><MessageSquareText size={14} /> Ask</button>
-                <button role="tab" aria-selected={railMode === "trace"} onClick={() => setRailMode("trace")}><FileText size={14} /> Trace</button>
+                <button role="tab" aria-selected={railMode === "trace"} onClick={() => { setRailMode("trace"); setChatSpotlight(false); }}><FileText size={14} /> Trace</button>
               </div>
-              <button className="rail-close" type="button" onClick={() => { setMobileRailOpen(false); askButton.current?.focus(); }} aria-label="Close research assistant"><X size={18} /></button>
+              <div className="rail-actions">
+                {railMode === "chat" && <button
+                  ref={spotlightButton}
+                  className="rail-expand"
+                  type="button"
+                  aria-expanded={chatSpotlight}
+                  onClick={() => setChatSpotlight((current) => !current)}
+                >
+                  {chatSpotlight ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                  {chatSpotlight ? "Return" : "Expand"}
+                </button>}
+                <button className="rail-close" type="button" onClick={() => { setMobileRailOpen(false); setChatSpotlight(false); askButton.current?.focus(); }} aria-label="Close research assistant"><X size={18} /></button>
+              </div>
             </div>
-            {railMode === "chat" ? <ResearchChat key={report.run_id} report={report} focusComposer={mobileRailOpen} /> : <>
+            {railMode === "chat" ? <ResearchChat key={report.run_id} report={report} focusComposer={mobileRailOpen || chatSpotlight} /> : <>
               <div className="trace-head"><FileText size={17} /><div><h2 id="trace-title">Run trace</h2><span>Public data only</span></div></div>
               <div className="trace-list">
                 {report.trace.map((step, index) => (

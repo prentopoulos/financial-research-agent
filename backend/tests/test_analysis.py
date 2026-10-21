@@ -7,10 +7,26 @@ from backend.app.analysis import calculate_valuation, extract_financials, safe_d
 from backend.app.inline_xbrl import InlineDocument
 from backend.app.models import Financials
 from backend.app.security import AccessTriangle, SecurityBoundaryError
+from backend.app.llm import ModelError, validate_memo_prose
 from backend.app.workflow import fallback_peer_tickers
 
 
 class AnalysisTests(unittest.TestCase):
+    def test_model_memo_rejects_raw_schema_fields_and_values(self):
+        with self.assertRaises(ModelError):
+            validate_memo_prose(
+                "Verdict based on revenue_growth 0.403164719655273 and market_cap 5279346000000.0.",
+                ["Readable point."],
+                ["Readable risk."],
+            )
+
+    def test_model_memo_accepts_human_readable_financial_copy(self):
+        validate_memo_prose(
+            "Revenue grew 40.3% while the company produced $127.0B in free cash flow.",
+            ["The shares trade at 17.4× sales."],
+            ["A slowdown could pressure the current premium."],
+        )
+
     @staticmethod
     def facts(tag: str, rows: list[dict], namespace: str = "us-gaap") -> dict:
         return {"facts": {namespace: {tag: {"units": {"USD": rows}}}}}

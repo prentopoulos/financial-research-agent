@@ -22,13 +22,14 @@ Phase 1 MVP is implemented and published to the owner's private GitHub repositor
   prompt-injection/secret guards, a deterministic no-credit fallback, and ephemeral bounded memory.
 - Separate Explore mode using one OpenAI Responses web search, validated public citations, a locked
   report verdict, and independently filterable LangSmith traces.
+- Expandable chat spotlight with Return and Escape controls that preserves the active conversation.
 - Docker packaging and a private editable desktop/mobile design source.
 
 ## Verification
 
 - `npm run typecheck`: pass.
 - `npm run lint`: pass.
-- Python unit tests: pass (19).
+- Python unit tests: pass (21).
 - `npm run build`: pass.
 - Live NVDA run: pass using FY2026 SEC facts and 2026-10-19 market price.
 - Live AAPL and JPM cross-sector runs: pass with SEC-validated peers and no failed workflow steps.
@@ -38,6 +39,7 @@ Phase 1 MVP is implemented and published to the owner's private GitHub repositor
 - Live NVDA Explore question: pass with current web search, validated source links, a locked report
   verdict, and the `gpt-5-mini · live sources verified` label.
 - Sidebar scroll sync: pass for Conclusion, Financials, Risks, and the bottom-of-page Sources state.
+- The report section indicator ends at Sources; Trace remains a separate evidence-rail tab.
 - Semantic screen check: pass; desktop/mobile layouts and the design-system instance were verified.
 - Three-perspective design review: complete; accessibility, mobile navigation, export depth, error recovery, and typography findings were applied.
 

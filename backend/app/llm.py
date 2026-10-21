@@ -46,6 +46,15 @@ class ModelError(RuntimeError):
     pass
 
 
+def validate_memo_prose(summary: str, thesis: list[str], risks: list[str]) -> None:
+    """Reject model copy that exposes schema fields or unformatted calculation values."""
+    copy = " ".join([summary, *thesis, *risks])
+    if re.search(r"\b[a-z]+(?:_[a-z]+)+\b", copy):
+        raise ModelError("Model memo exposed internal field names; used the deterministic memo instead.")
+    if re.search(r"(?<![\d])\d+\.\d{4,}(?![\d])", copy) or re.search(r"(?<![$\d,])\d{10,}(?:\.0)?\b", copy):
+        raise ModelError("Model memo exposed unformatted calculation values; used the deterministic memo instead.")
+
+
 def extract_web_answer(body: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
     """Extract response text and deduplicated URL citations from the Responses API."""
     text_parts: list[str] = []
@@ -246,7 +255,9 @@ class ModelClient:
                 'with keys "summary" (string), "thesis" (array of exactly four strings), and "risks" (array of '
                 "exactly four strings). Never change the supplied verdict, calculate new numbers, invent events, "
                 "or claim to have read filing text. Use only supplied facts. Frame unsupported industry concerns as "
-                "questions to verify in the cited filing. Avoid investment instructions and price targets."
+                "questions to verify in the cited filing. Write for a human reader: never expose JSON field names or "
+                "raw calculation values. Format currency, percentages, and multiples compactly, using no more than "
+                "two decimal places. Keep the summary to two sentences. Avoid investment instructions and price targets."
             ),
             user=context,
         )
@@ -259,7 +270,10 @@ class ModelClient:
             raise ModelError("Model memo must contain exactly four thesis statements.")
         if not isinstance(risks, list) or len(risks) != 4 or not all(isinstance(item, str) and item.strip() for item in risks):
             raise ModelError("Model memo must contain exactly four risk statements.")
-        return {"summary": summary.strip(), "thesis": [item.strip() for item in thesis], "risks": [item.strip() for item in risks]}, usage
+        clean_thesis = [item.strip() for item in thesis]
+        clean_risks = [item.strip() for item in risks]
+        validate_memo_prose(summary.strip(), clean_thesis, clean_risks)
+        return {"summary": summary.strip(), "thesis": clean_thesis, "risks": clean_risks}, usage
 
     async def answer_report_question(
         self,

@@ -92,6 +92,9 @@ sends only the report run ID, a public-company question, and at most eight recen
 rebuilds a typed virtual ontology from its verified report snapshot on every turn, then validates the
 answer's evidence IDs before returning source links.
 
+Use **Expand** to move the same conversation into a focused workspace. **Return** or `Escape` restores
+the evidence rail without clearing messages, the selected mode, suggestions, or a draft question.
+
 Conversation is read-only and process-local: it has no web browser, uploads, private portfolio data,
 database writes, messages, or trading tools. Reports expire after 30 minutes, conversations reset when
 the server restarts, and each run accepts at most 24 questions. Links and common credential patterns
