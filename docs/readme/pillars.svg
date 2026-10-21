@@ -1,0 +1,30 @@
+<svg width="1200" height="294" viewBox="0 0 1200 294" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Ledger research principles</title>
+  <desc id="desc">Ledger combines live public evidence, deterministic financial analysis, and cited conversation.</desc>
+  <defs>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.8" fill="#D9E1EC"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="294" fill="#F8FAFC"/>
+  <rect width="1200" height="294" fill="url(#dots)" opacity="0.45"/>
+  <path d="M400 42V252M800 42V252" stroke="#D9E1EC"/>
+
+  <text x="44" y="76" fill="#306BD9" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.2">01 / EVIDENCE</text>
+  <text x="44" y="135" fill="#0E131C" font-family="Georgia, 'Times New Roman', serif" font-size="40">Live inputs.</text>
+  <text x="44" y="177" fill="#53657D" font-family="Arial, sans-serif" font-size="16">SEC filings and market history arrive</text>
+  <text x="44" y="201" fill="#53657D" font-family="Arial, sans-serif" font-size="16">with source, period, and retrieval time.</text>
+  <path d="M44 230H134" stroke="#306BD9" stroke-width="3"/>
+
+  <text x="444" y="76" fill="#306BD9" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.2">02 / ANALYSIS</text>
+  <text x="444" y="135" fill="#0E131C" font-family="Georgia, 'Times New Roman', serif" font-size="40">Locked math.</text>
+  <text x="444" y="177" fill="#53657D" font-family="Arial, sans-serif" font-size="16">Python calculates financials, multiples,</text>
+  <text x="444" y="201" fill="#53657D" font-family="Arial, sans-serif" font-size="16">confidence, and the valuation verdict.</text>
+  <path d="M444 230H534" stroke="#306BD9" stroke-width="3"/>
+
+  <text x="844" y="76" fill="#306BD9" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.2">03 / CONVERSATION</text>
+  <text x="844" y="135" fill="#0E131C" font-family="Georgia, 'Times New Roman', serif" font-size="40">Cited answers.</text>
+  <text x="844" y="177" fill="#53657D" font-family="Arial, sans-serif" font-size="16">Ask about the report or explore the</text>
+  <text x="844" y="201" fill="#53657D" font-family="Arial, sans-serif" font-size="16">public web without changing its facts.</text>
+  <path d="M844 230H934" stroke="#306BD9" stroke-width="3"/>
+</svg>

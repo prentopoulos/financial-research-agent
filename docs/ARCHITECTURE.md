@@ -20,6 +20,15 @@ The `company-research` graph calls the Python analysis layer for period normaliz
 valuation multiples, confidence, and the final verdict. Model output is validated against the typed
 report before it can be displayed or exported.
 
+## Exploded system view
+
+![Exploded axonometric view of Ledger](diagrams/exploded-system.svg)
+
+The four physical layers show dependency rather than network traffic. Public evidence supports the
+deterministic Python core; that core constrains the three agent workflows; and the workflows serve the
+research workspace. The blue calculation layer is the load-bearing part because language generation
+cannot replace or modify its figures and verdict.
+
 ## Research data flow
 
 ![Ledger research data flow](diagrams/research-data-flow.svg)
@@ -62,13 +71,14 @@ a separate boundary.
 
 ## Diagram sources
 
-The three diagrams are authored as self-contained HTML with inline SVG and exported to SVG for GitHub:
+The four diagrams are authored as self-contained HTML with inline SVG and exported to SVG for GitHub:
 
 - [System architecture HTML](diagrams/system-architecture.html)
+- [Exploded system HTML](diagrams/exploded-system.html)
 - [Research data flow HTML](diagrams/research-data-flow.html)
 - [Access-triangle matrix HTML](diagrams/access-triangle-matrix.html)
 
 Run `py scripts/generate_docs_diagrams.py` to regenerate the HTML sources. SVG exports are produced
 with the installed `diagram-design` skill's exporter and checked with its offline self-check.
 
-[Open all three diagrams](ARCHITECTURE.html).
+[Open all four diagrams](ARCHITECTURE.html).
