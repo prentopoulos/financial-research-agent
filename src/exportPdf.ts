@@ -53,6 +53,12 @@ export async function downloadResearchPdf(report: ResearchReport): Promise<strin
   const { jsPDF } = await import("jspdf");
   const memo = safeMemoCopy(report);
   const doc = new jsPDF({ unit: "pt", format: "a4", compress: true });
+  doc.setProperties({
+    title: clean(`${report.company_name} (${report.ticker}) research report`),
+    subject: "Evidence-led public equity research",
+    author: "Ledger",
+    creator: "Ledger Financial Research Agent",
+  });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 54;
@@ -64,7 +70,11 @@ export async function downloadResearchPdf(report: ResearchReport): Promise<strin
   let y = margin;
 
   const addPage = () => { doc.addPage(); y = margin; };
-  const ensureRoom = (height: number) => { if (y + height > pageHeight - margin) addPage(); };
+  const ensureRoom = (height: number) => {
+    if (y + height <= pageHeight - margin) return false;
+    addPage();
+    return true;
+  };
   const rule = () => {
     doc.setDrawColor(line); doc.setLineWidth(0.6); doc.line(margin, y, pageWidth - margin, y); y += 18;
   };
@@ -129,6 +139,24 @@ export async function downloadResearchPdf(report: ResearchReport): Promise<strin
   y += 88;
 
   section("01 Investment case", "What the numbers say", 130); numberedList(memo.thesis); y += 8;
+
+  ensureRoom(106);
+  label("Report frame");
+  const reportFrame = [
+    ["Confidence", report.confidence, "Evidence basis", report.financials.basis_label],
+    ["Market cap", money(report.valuation.market_cap), "Cited records", String(report.citations.length)],
+  ];
+  reportFrame.forEach(([leftLabel, leftValue, rightLabel, rightValue]) => {
+    doc.setDrawColor(line); doc.line(margin, y + 22, pageWidth - margin, y + 22);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(muted);
+    doc.text(clean(leftLabel), margin, y + 13); doc.text(clean(rightLabel), margin + 264, y + 13);
+    doc.setFont("helvetica", "bold"); doc.setTextColor(ink);
+    doc.text(clean(leftValue), margin + 82, y + 13);
+    doc.text(clean(rightValue), pageWidth - margin, y + 13, { align: "right" });
+    y += 34;
+  });
+  y += 12;
+
   section("02 Financial profile", "Reported fundamentals", 150);
   const financialRows = [
     ["Evidence basis", report.financials.basis_label],
@@ -162,32 +190,52 @@ export async function downloadResearchPdf(report: ResearchReport): Promise<strin
   ensureRoom(86); label("05 Methodology"); paragraph(report.methodology, 9.25); y += 8;
 
   const sourceWidth = contentWidth;
-  const sourceRowHeight = 68;
-  const sourceRows = report.citations.length;
-  section("06 Sources", "Evidence ledger", sourceRows * sourceRowHeight);
-  ensureRoom(sourceRows * sourceRowHeight);
-  const sourceStartY = y;
+  section("06 Sources", "Evidence ledger", 96);
   report.citations.forEach((source, index) => {
     const x = margin;
-    const rowY = sourceStartY + index * sourceRowHeight;
     const textX = x + 25;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(8);
+    const titleLines = doc.splitTextToSize(clean(source.label), sourceWidth - 25) as string[];
+    doc.setFont("helvetica", "normal"); doc.setFontSize(7.25);
+    const metadata = doc.splitTextToSize(clean(`${source.source} / retrieved ${source.retrieved_at.slice(0, 10)}`), sourceWidth - 25) as string[];
+    doc.setFontSize(6.5);
+    const urlLines = doc.splitTextToSize(clean(source.url), sourceWidth - 25) as string[];
+    const sourceRowHeight = Math.max(54, titleLines.length * 10 + metadata.length * 9.5 + urlLines.length * 8.5 + 18);
+    if (y + sourceRowHeight > pageHeight - margin) {
+      addPage();
+      label("06 Sources / continued");
+      y += 4;
+    }
+    const rowY = y;
     doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(blue);
     doc.text(String(index + 1).padStart(2, "0"), x, rowY);
     doc.setTextColor(ink);
-    const titleLines = doc.splitTextToSize(clean(source.label), sourceWidth - 25);
-    doc.textWithLink(titleLines[0], textX, rowY, { url: source.url });
+    titleLines.forEach((titleLine, lineIndex) => {
+      doc.textWithLink(titleLine, textX, rowY + lineIndex * 10, { url: source.url });
+    });
     doc.setFont("helvetica", "normal"); doc.setFontSize(7.25); doc.setTextColor(muted);
-    const metadata = doc.splitTextToSize(clean(`${source.source} / retrieved ${source.retrieved_at.slice(0, 10)}`), sourceWidth - 25);
-    doc.text(metadata.slice(0, 2), textX, rowY + 12, { lineHeightFactor: 1.3 });
+    const metadataY = rowY + titleLines.length * 10 + 3;
+    doc.text(metadata, textX, metadataY, { lineHeightFactor: 1.3 });
     doc.setFontSize(6.5); doc.setTextColor(blue);
-    const urlLines = doc.splitTextToSize(clean(source.url), sourceWidth - 25);
-    doc.text(urlLines.slice(0, 2), textX, rowY + 27, { lineHeightFactor: 1.25 });
+    const urlY = metadataY + metadata.length * 9.5 + 3;
+    urlLines.forEach((urlLine, lineIndex) => {
+      doc.textWithLink(urlLine, textX, urlY + lineIndex * 8.5, { url: source.url });
+    });
+    doc.setDrawColor(line); doc.line(textX, rowY + sourceRowHeight - 8, pageWidth - margin, rowY + sourceRowHeight - 8);
+    y += sourceRowHeight;
   });
-  y = sourceStartY + sourceRows * sourceRowHeight;
 
   const totalPages = doc.getNumberOfPages();
   for (let page = 1; page <= totalPages; page += 1) {
-    doc.setPage(page); doc.setDrawColor(line); doc.line(margin, pageHeight - 34, pageWidth - margin, pageHeight - 34);
+    doc.setPage(page);
+    if (page > 1) {
+      doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(muted);
+      doc.text(clean(`LEDGER / ${report.ticker}`), margin, 28, { charSpace: 1.1 });
+      doc.setFont("helvetica", "normal");
+      doc.text(clean(report.generated_at.slice(0, 10)), pageWidth - margin, 28, { align: "right" });
+      doc.setDrawColor(line); doc.line(margin, 40, pageWidth - margin, 40);
+    }
+    doc.setDrawColor(line); doc.line(margin, pageHeight - 34, pageWidth - margin, pageHeight - 34);
     doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(muted);
     doc.text("Research aid - verify primary filings before making a decision.", margin, pageHeight - 20);
     doc.text(`${page} / ${totalPages}`, pageWidth - margin, pageHeight - 20, { align: "right" });
