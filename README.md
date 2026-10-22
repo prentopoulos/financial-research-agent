@@ -18,6 +18,15 @@
   <img src="docs/readme/pillars.svg" alt="Ledger uses live evidence, deterministic analysis, and cited conversation" width="900">
 </p>
 
+<p align="center">
+  <a href="artifacts/video/ledger-launch.mp4"><img src="artifacts/video/ledger-launch-poster.jpg" alt="Ledger launch film showing the NVIDIA research workspace" width="900"></a>
+</p>
+
+<p align="center">
+  <strong><a href="artifacts/video/ledger-launch.mp4">Watch the 43-second launch film</a></strong>
+  · <a href="artifacts/video/ledger-launch-vertical.mp4">Vertical cut</a>
+</p>
+
 ## Start
 
 Requires Python 3.12+, Node.js 22+, Git, and a real contact address for the SEC user agent.
