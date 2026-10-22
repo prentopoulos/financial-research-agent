@@ -220,6 +220,14 @@ const AppFrame: React.FC<{frame: number; focus?: 'report' | 'chat'}> = ({frame, 
   const shotDuration = focus === 'chat' ? SCENE.chat : SCENE.workspace;
   const cameraDrift = interpolate(frame, [0, shotDuration], [0, 1], clamp);
   const cameraScale = scale * (1 + cameraDrift * .025);
+  const reportScroll = focus === 'report' ? interpolate(
+    frame,
+    [40, 95, 130, 150, 190, 210, 250, 270, 310, 345],
+    [0, 0, 470, 520, 850, 900, 1180, 1240, 1460, 1460],
+    {...clamp, easing: Easing.inOut(Easing.cubic)},
+  ) : 0;
+  const activeSection = frame < 120 ? 0 : frame < 180 ? 1 : frame < 240 ? 2 : frame < 300 ? 3 : 4;
+  const navItems = ['01  CONCLUSION', '02  FINANCIALS', '03  VALUATION', '04  RISKS', '05  SOURCES'];
   return (
     <div style={{position: 'absolute', left: '50%', top: vertical ? '52%' : '61%', width: canvasW, height: canvasH, transform: `translate(-50%, -50%) translateY(${(1 - reveal) * 60 - cameraDrift * 10}px) scale(${cameraScale})`, opacity: reveal, background: COLORS.white, border: `1px solid ${COLORS.ink}`, boxShadow: '0 40px 120px rgba(14,19,28,.20)', overflow: 'hidden', fontFamily: sans}}>
       <div style={{height: 62, borderBottom: `1px solid ${COLORS.ink}`, display: 'grid', gridTemplateColumns: vertical ? '240px 1fr' : '220px 1fr 420px 150px', alignItems: 'center'}}>
@@ -231,20 +239,56 @@ const AppFrame: React.FC<{frame: number; focus?: 'report' | 'chat'}> = ({frame, 
       <div style={{height: 'calc(100% - 62px)', display: 'grid', gridTemplateColumns: vertical ? `170px 1fr ${chatWidth}px` : `210px 1fr ${chatWidth}px`, transition: 'grid-template-columns .2s linear'}}>
         <div style={{borderRight: `1px solid ${COLORS.line}`, padding: '32px 24px', display: 'flex', flexDirection: 'column'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 26, borderBottom: `1px solid ${COLORS.line}`}}><span style={{width: 40, height: 40, borderRadius: '50%', display: 'grid', placeItems: 'center', color: 'white', background: COLORS.blue, fontSize: 12, fontWeight: 700}}>NV</span><div><b>NVDA</b><small style={{display: 'block', color: COLORS.muted, marginTop: 5}}>Nasdaq</small></div></div>
-          {['01  CONCLUSION', '02  FINANCIALS', '03  VALUATION', '04  RISKS', '05  SOURCES'].map((item, i) => <div key={item} style={{padding: '18px 0', color: i === 0 ? COLORS.ink : COLORS.muted, fontSize: 11, letterSpacing: '.05em', borderLeft: i === 0 ? `12px solid ${COLORS.blue}` : '12px solid transparent', marginLeft: -24, paddingLeft: 12}}>{item}</div>)}
+          {navItems.map((item, i) => <div key={item} style={{padding: '18px 0', color: i === activeSection ? COLORS.ink : COLORS.muted, fontSize: 11, fontWeight: i === activeSection ? 700 : 400, letterSpacing: '.05em', borderLeft: i === activeSection ? `12px solid ${COLORS.blue}` : '12px solid transparent', marginLeft: -24, paddingLeft: 12, background: i === activeSection ? COLORS.blueSoft : 'transparent'}}>{item}</div>)}
           <div style={{marginTop: 'auto', borderTop: `1px solid ${COLORS.line}`, paddingTop: 14, fontSize: 10, color: COLORS.muted}}>Run 773f812e<br/><span style={{display: 'inline-block', marginTop: 7}}>32.6s total</span></div>
         </div>
-        <div style={{minWidth: 0, transform: `translateX(${reportShift}px)`, transition: 'transform .2s linear'}}>
-          <div style={{padding: vertical ? '72px 42px 38px' : '62px 66px 34px', borderBottom: `1px solid ${COLORS.ink}`}}>
-            <div style={{fontSize: 11, color: COLORS.muted, letterSpacing: '.08em'}}>EQUITY RESEARCH / 2026-10-21</div>
-            <div style={{fontSize: 13, fontWeight: 700, letterSpacing: '.08em', marginTop: 60}}>NVIDIA CORP</div>
-            <div style={{fontFamily: serif, fontSize: vertical ? 66 : 78, lineHeight: .85, letterSpacing: '-.035em', marginTop: 18}}>Fairly valued<br/>at today’s price.</div>
-            <div style={{display: 'grid', gridTemplateColumns: '10px 1fr', gap: 16, marginTop: 34, maxWidth: 760, fontSize: 13, lineHeight: 1.55}}><span style={{width: 9, height: 9, borderRadius: '50%', background: COLORS.blue, marginTop: 5}}/><span>NVIDIA pairs 40.30% revenue growth and exceptional margins with a valuation premium at 17.61× sales.</span></div>
+        <div style={{minWidth: 0, overflow: 'hidden', transform: `translateX(${reportShift}px)`, transition: 'transform .2s linear'}}>
+          <div style={{transform: `translateY(${-reportScroll}px)`}}>
+            <section style={{minHeight: 730}}>
+              <div style={{padding: vertical ? '58px 42px 30px' : '48px 58px 30px', borderBottom: `1px solid ${COLORS.ink}`}}>
+                <div style={{fontSize: 11, color: COLORS.muted, letterSpacing: '.08em'}}>EQUITY RESEARCH / 2026-10-21</div>
+                <div style={{fontSize: 13, fontWeight: 700, letterSpacing: '.08em', marginTop: 38}}>NVIDIA CORP</div>
+                <div style={{fontFamily: serif, fontSize: vertical ? 58 : 68, lineHeight: .88, letterSpacing: '-.035em', marginTop: 15}}>Fairly valued<br/>at today’s price.</div>
+                <div style={{display: 'grid', gridTemplateColumns: '10px 1fr', gap: 16, marginTop: 26, maxWidth: 760, fontSize: 13, lineHeight: 1.55}}><span style={{width: 9, height: 9, borderRadius: '50%', background: COLORS.blue, marginTop: 5}}/><span>NVIDIA pairs 40.30% revenue growth and exceptional margins with a valuation premium at 17.61× sales.</span></div>
+              </div>
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)'}}>
+                {[['SHARE PRICE','$221.36'],['REVENUE GROWTH','40.30%'],['GROSS MARGIN','74.67%'],['P / E','27.66×']].map(([label, value], i) => <div key={label} style={{height: 118, padding: 18, borderRight: `1px solid ${COLORS.line}`, borderBottom: `1px solid ${COLORS.ink}`}}><span style={{fontSize: 9, color: COLORS.muted, letterSpacing: '.08em'}}>{label}</span><strong style={{display: 'block', fontFamily: serif, fontSize: 34, fontWeight: 400, marginTop: 24, color: i === 1 ? COLORS.green : i === 3 ? COLORS.red : COLORS.ink}}>{value}</strong></div>)}
+              </div>
+              <div style={{padding: '34px 46px', display: 'grid', gridTemplateColumns: '48px 220px 1fr', gap: 24}}><span style={{fontSize: 11, color: COLORS.blue, fontWeight: 700}}>01</span><div><span style={{fontSize: 10, color: COLORS.muted, letterSpacing: '.1em'}}>CONCLUSION</span><h2 style={{fontFamily: serif, fontWeight: 400, fontSize: 36, lineHeight: 1, margin: '12px 0 0'}}>What the<br/>numbers say</h2></div><div style={{borderTop: `1px solid ${COLORS.ink}`}}>{['Scale and growth', 'Exceptional profitability', 'Cash flow strength'].map((x, i) => <div key={x} style={{padding: '14px 0', borderBottom: `1px solid ${COLORS.line}`, fontSize: 12}}><span style={{color: COLORS.muted, marginRight: 18}}>0{i + 1}</span>{x}</div>)}</div></div>
+            </section>
+
+            <section style={{minHeight: 340, padding: '38px 48px', borderTop: `1px solid ${COLORS.ink}`}}>
+              <div style={{display: 'grid', gridTemplateColumns: '48px 220px 1fr', gap: 24}}>
+                <span style={{fontSize: 11, color: COLORS.blue, fontWeight: 700}}>02</span>
+                <div><span style={{fontSize: 10, color: COLORS.muted, letterSpacing: '.1em'}}>FINANCIALS</span><h2 style={{fontFamily: serif, fontWeight: 400, fontSize: 38, lineHeight: 1, margin: '12px 0 0'}}>Growth with<br/>cash behind it.</h2></div>
+                <div style={{borderTop: `1px solid ${COLORS.ink}`}}>{[['REVENUE GROWTH','40.30%'],['GROSS MARGIN','74.67%'],['FREE CASH FLOW','$127.01B']].map(([label, value]) => <div key={label} style={{display: 'flex', justifyContent: 'space-between', padding: '16px 0', borderBottom: `1px solid ${COLORS.line}`, fontSize: 11}}><span style={{color: COLORS.muted, letterSpacing: '.06em'}}>{label}</span><strong style={{fontFamily: serif, fontSize: 23, fontWeight: 400}}>{value}</strong></div>)}</div>
+              </div>
+            </section>
+
+            <section style={{minHeight: 340, padding: '38px 48px', borderTop: `1px solid ${COLORS.ink}`, background: '#fbfcfd'}}>
+              <div style={{display: 'grid', gridTemplateColumns: '48px 220px 1fr', gap: 24}}>
+                <span style={{fontSize: 11, color: COLORS.blue, fontWeight: 700}}>03</span>
+                <div><span style={{fontSize: 10, color: COLORS.muted, letterSpacing: '.1em'}}>VALUATION</span><h2 style={{fontFamily: serif, fontWeight: 400, fontSize: 38, lineHeight: 1, margin: '12px 0 0'}}>Quality has<br/>a price.</h2></div>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderTop: `1px solid ${COLORS.ink}`}}>{[['P / E','27.66×'],['P / SALES','17.61×'],['FCF YIELD','2.38%']].map(([label, value]) => <div key={label} style={{padding: '22px 14px', borderRight: `1px solid ${COLORS.line}`}}><span style={{display: 'block', fontSize: 9, color: COLORS.muted, letterSpacing: '.08em'}}>{label}</span><strong style={{display: 'block', fontFamily: serif, fontSize: 30, fontWeight: 400, marginTop: 40}}>{value}</strong></div>)}</div>
+              </div>
+            </section>
+
+            <section style={{minHeight: 350, padding: '38px 48px', borderTop: `1px solid ${COLORS.ink}`}}>
+              <div style={{display: 'grid', gridTemplateColumns: '48px 220px 1fr', gap: 24}}>
+                <span style={{fontSize: 11, color: COLORS.blue, fontWeight: 700}}>04</span>
+                <div><span style={{fontSize: 10, color: COLORS.muted, letterSpacing: '.1em'}}>RISKS</span><h2 style={{fontFamily: serif, fontWeight: 400, fontSize: 38, lineHeight: 1, margin: '12px 0 0'}}>Where the thesis<br/>can break.</h2></div>
+                <div style={{borderTop: `1px solid ${COLORS.ink}`}}>{['Export restrictions', 'Customer concentration', 'Supply and execution'].map((risk, i) => <div key={risk} style={{display: 'grid', gridTemplateColumns: '34px 1fr auto', padding: '17px 0', borderBottom: `1px solid ${COLORS.line}`, fontSize: 12}}><span style={{color: COLORS.muted}}>0{i + 1}</span><span>{risk}</span><span style={{fontSize: 9, color: COLORS.red, letterSpacing: '.08em'}}>WATCH</span></div>)}</div>
+              </div>
+            </section>
+
+            <section style={{minHeight: 420, padding: '38px 48px', borderTop: `1px solid ${COLORS.ink}`, background: '#fbfcfd'}}>
+              <div style={{display: 'grid', gridTemplateColumns: '48px 220px 1fr', gap: 24}}>
+                <span style={{fontSize: 11, color: COLORS.blue, fontWeight: 700}}>05</span>
+                <div><span style={{fontSize: 10, color: COLORS.muted, letterSpacing: '.1em'}}>SOURCES</span><h2 style={{fontFamily: serif, fontWeight: 400, fontSize: 38, lineHeight: 1, margin: '12px 0 0'}}>Every claim<br/>keeps its trail.</h2></div>
+                <div style={{borderTop: `1px solid ${COLORS.ink}`}}>{[['01','SEC filing','2026-08-26'],['02','SEC Company Facts','XBRL · VERIFIED'],['03','Yahoo Finance','PRICE HISTORY · 1Y']].map(([n, label, meta]) => <div key={n} style={{display: 'grid', gridTemplateColumns: '36px 1fr auto', alignItems: 'center', padding: '18px 0', borderBottom: `1px solid ${COLORS.line}`}}><span style={{fontSize: 10, color: COLORS.blue, fontWeight: 700}}>{n}</span><strong style={{fontSize: 12}}>{label}</strong><span style={{fontSize: 9, color: COLORS.muted, letterSpacing: '.06em'}}>{meta}</span></div>)}</div>
+              </div>
+            </section>
           </div>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)'}}>
-            {[['SHARE PRICE','$221.36'],['REVENUE GROWTH','40.3%'],['GROSS MARGIN','74.7%'],['P / E','27.7×']].map(([label, value], i) => <div key={label} style={{height: 136, padding: 22, borderRight: `1px solid ${COLORS.line}`, borderBottom: `1px solid ${COLORS.ink}`}}><span style={{fontSize: 10, color: COLORS.muted, letterSpacing: '.08em'}}>{label}</span><strong style={{display: 'block', fontFamily: serif, fontSize: 38, fontWeight: 400, marginTop: 30, color: i === 1 ? COLORS.green : i === 3 ? COLORS.red : COLORS.ink}}>{value}</strong></div>)}
-          </div>
-          <div style={{padding: '42px 48px', display: 'grid', gridTemplateColumns: '55px 260px 1fr', gap: 28}}><span style={{fontSize: 11, color: COLORS.blue, fontWeight: 700}}>01</span><div><span style={{fontSize: 11, color: COLORS.muted, letterSpacing: '.1em'}}>INVESTMENT CASE</span><h2 style={{fontFamily: serif, fontWeight: 400, fontSize: 40, lineHeight: 1, margin: '14px 0 0'}}>What the<br/>numbers say</h2></div><div style={{borderTop: `1px solid ${COLORS.ink}`}}>{['Scale and growth', 'Exceptional profitability', 'Cash flow strength'].map((x, i) => <div key={x} style={{padding: '17px 0', borderBottom: `1px solid ${COLORS.line}`, fontSize: 13}}><span style={{color: COLORS.muted, marginRight: 18}}>0{i + 1}</span>{x}</div>)}</div></div>
         </div>
         <div style={{borderLeft: `1px solid ${COLORS.line}`, padding: '20px 22px', background: COLORS.white, position: 'relative', zIndex: 2}}>
           <div style={{display: 'flex', gap: 28, height: 42, alignItems: 'center', borderBottom: `1px solid ${COLORS.ink}`, fontSize: 11, fontWeight: 700}}><span style={{borderBottom: `2px solid ${COLORS.blue}`, height: '100%', display: 'grid', placeItems: 'center'}}>ASK</span><span style={{color: COLORS.muted}}>TRACE</span><span style={{marginLeft: 'auto', color: COLORS.muted}}>↗ EXPAND</span></div>
@@ -511,7 +555,15 @@ const CloseScene: React.FC = () => {
 export const LedgerLaunch: React.FC = () => (
   <AbsoluteFill style={{fontFamily: sans}}>
     <GlobalBackdrop />
-    <Audio src={staticFile('ledger/audio/ledger-score.wav')} volume={0.72} />
+    <Audio
+      src={staticFile('ledger/audio/ledger-score.wav')}
+      volume={(frame) => interpolate(
+        frame,
+        [0, 45, SCENE_START.workspace, SCENE_START.chat, SCENE_START.trust, SCENE_START.close, TOTAL_FRAMES - 1],
+        [0, .72, .68, .60, .72, .62, 0],
+        clamp,
+      )}
+    />
     <EvidenceThread />
     <Series>
       <Series.Sequence durationInFrames={SCENE.premise}><PremiseScene /></Series.Sequence>

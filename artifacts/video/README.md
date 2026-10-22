@@ -1,7 +1,9 @@
 # Ledger launch film
 
-- [Landscape film](ledger-launch.mp4) — 1920×1080, 48 seconds, stereo
-- [Vertical film](ledger-launch-vertical.mp4) — 1080×1920, 48 seconds, stereo
+- [Landscape film](ledger-launch.mp4) — 1920×1080, 51 seconds, stereo
+- [Vertical film](ledger-launch-vertical.mp4) — 1080×1920, 51 seconds, stereo
+- [Landscape contact sheet](ledger-launch-contact-sheet.jpg)
+- [Vertical contact sheet](ledger-launch-vertical-contact-sheet.jpg)
 - [Editable Remotion source](../../video/README.md)
 
 Both cuts use the same frame-timed scene tree and original procedural score. The interface figures

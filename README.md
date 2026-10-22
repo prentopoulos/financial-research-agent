@@ -23,7 +23,7 @@
 </p>
 
 <p align="center">
-  <strong><a href="artifacts/video/ledger-launch.mp4">Watch the 48-second launch film</a></strong>
+  <strong><a href="artifacts/video/ledger-launch.mp4">Watch the 51-second launch film</a></strong>
   · <a href="artifacts/video/ledger-launch-vertical.mp4">Vertical cut</a>
 </p>
 
