@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="agents-title agents-desc" id="agent-workflows-root">
+<title id="agents-title">Ledger agent workflows and model sequence</title><desc id="agents-desc">Three bounded LangGraph workflows show how company research, report chat, and market explore ground evidence, use GPT-5 mini, verify outputs, and deliver cited results.</desc>
+
+  <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #agent-workflows-root { color: #0e131c; font-family: 'DM Sans',Arial,sans-serif; }
+      #agent-workflows-root .diagram-container { width:100%;overflow-x:auto }
+      @media print {
+#agent-workflows-root .diagram-container { overflow-x:visible }
+}
+      #agent-workflows-root .paper { fill:#fff }
+      #agent-workflows-root .dots { fill:url(#agent-workflows-dots);opacity:.38 }
+      #agent-workflows-root .zone { fill:#f8fafc;stroke:#d9e1ec;stroke-width:1 }
+      #agent-workflows-root .zone-title { font:600 9px 'DM Sans',Arial,sans-serif;letter-spacing:1.8px;fill:#53657d }
+      #agent-workflows-root .title { font:400 34px 'Instrument Serif',Georgia,serif;fill:#0e131c }
+      #agent-workflows-root .subtitle { font:400 12px 'DM Sans',Arial,sans-serif;fill:#53657d }
+      #agent-workflows-root .node { fill:#fff;stroke:#0e131c;stroke-width:1 }
+      #agent-workflows-root .node-soft { fill:#f8fafc;stroke:#9aa8ba;stroke-width:1 }
+      #agent-workflows-root .node-focus { fill:#edf3fc;stroke:#306bd9;stroke-width:1.4 }
+      #agent-workflows-root .node-dash { fill:#fff;stroke:#9aa8ba;stroke-width:1;stroke-dasharray:5 4 }
+      #agent-workflows-root .tag { fill:none;stroke:#9aa8ba;stroke-width:.8 }
+      #agent-workflows-root .tag-focus { fill:none;stroke:#306bd9;stroke-width:.8 }
+      #agent-workflows-root .tag-text { font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:1px;fill:#53657d }
+      #agent-workflows-root .tag-text-focus { fill:#306bd9 }
+      #agent-workflows-root .node-name { font:600 13px 'DM Sans',Arial,sans-serif;fill:#0e131c }
+      #agent-workflows-root .node-sub { font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d }
+      #agent-workflows-root .connector { fill:none;stroke:#66768b;stroke-width:1.15;marker-end:url(#agent-workflows-arrow) }
+      #agent-workflows-root .connector-link { fill:none;stroke:#306bd9;stroke-width:1.25;marker-end:url(#agent-workflows-arrow-blue) }
+      #agent-workflows-root .connector-dash { fill:none;stroke:#66768b;stroke-width:1;stroke-dasharray:5 4;marker-end:url(#agent-workflows-arrow) }
+      #agent-workflows-root .edge-mask { fill:#fff }
+      #agent-workflows-root .edge-label { font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:.8px;fill:#53657d;text-anchor:middle }
+      #agent-workflows-root .rule { stroke:#d9e1ec;stroke-width:1 }
+      #agent-workflows-root .small { font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d }
+      #agent-workflows-root .strong { font-weight:600;fill:#0e131c }
+      #agent-workflows-root .lane { fill:#fff;stroke:#d9e1ec;stroke-width:1 }
+      #agent-workflows-root .lane-alt { fill:#f8fafc;stroke:#d9e1ec;stroke-width:1 }
+      #agent-workflows-root .lane-label { font:600 10px 'DM Sans',Arial,sans-serif;letter-spacing:1.2px;fill:#0e131c }
+      #agent-workflows-root .lane-sub { font:400 8px 'DM Sans',Arial,sans-serif;fill:#53657d }
+      #agent-workflows-root .step { font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:1px;fill:#53657d;text-anchor:middle }
+      #agent-workflows-root .model { fill:#fff;stroke:#66768b;stroke-width:1;stroke-dasharray:5 4 }
+      #agent-workflows-root .gate { fill:#edf3fc;stroke:#306bd9;stroke-width:1.35 }
+      #agent-workflows-root .handoff { fill:none;stroke:#306bd9;stroke-width:1;stroke-dasharray:4 4;marker-end:url(#agent-workflows-arrow-blue) }</style>
+    <pattern id="agent-workflows-dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#d9e1ec"/></pattern>
+    <marker id="agent-workflows-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#66768b"/></marker>
+    <marker id="agent-workflows-arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#306bd9"/></marker>
+  </defs>
+
+  <style>
+    .paper{fill:#fff}.dots{fill:url(#agent-workflows-dots);opacity:.38}.zone{fill:#f8fafc;stroke:#d9e1ec;stroke-width:1}
+    .zone-title{font:600 9px 'DM Sans',Arial,sans-serif;letter-spacing:1.8px;fill:#53657d}
+    .title{font:400 34px 'Instrument Serif',Georgia,serif;fill:#0e131c}.subtitle{font:400 12px 'DM Sans',Arial,sans-serif;fill:#53657d}
+    .node{fill:#fff;stroke:#0e131c;stroke-width:1}.node-soft{fill:#f8fafc;stroke:#9aa8ba;stroke-width:1}
+    .node-focus{fill:#edf3fc;stroke:#306bd9;stroke-width:1.4}.node-dash{fill:#fff;stroke:#9aa8ba;stroke-width:1;stroke-dasharray:5 4}
+    .tag{fill:none;stroke:#9aa8ba;stroke-width:.8}.tag-focus{fill:none;stroke:#306bd9;stroke-width:.8}
+    .tag-text{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:1px;fill:#53657d}.tag-text-focus{fill:#306bd9}
+    .node-name{font:600 13px 'DM Sans',Arial,sans-serif;fill:#0e131c}.node-sub{font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d}
+    .connector{fill:none;stroke:#66768b;stroke-width:1.15;marker-end:url(#agent-workflows-arrow)}.connector-link{fill:none;stroke:#306bd9;stroke-width:1.25;marker-end:url(#agent-workflows-arrow-blue)}
+    .connector-dash{fill:none;stroke:#66768b;stroke-width:1;stroke-dasharray:5 4;marker-end:url(#agent-workflows-arrow)}
+    .edge-mask{fill:#fff}.edge-label{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:.8px;fill:#53657d;text-anchor:middle}
+    .rule{stroke:#d9e1ec;stroke-width:1}.small{font:400 9px 'DM Sans',Arial,sans-serif;fill:#53657d}.strong{font-weight:600;fill:#0e131c}
+  </style>
+<rect class="paper" width="1000" height="620"/><rect class="dots" width="1000" height="620"/>
+<style>
+  .lane{fill:#fff;stroke:#d9e1ec;stroke-width:1}.lane-alt{fill:#f8fafc;stroke:#d9e1ec;stroke-width:1}
+  .lane-label{font:600 10px 'DM Sans',Arial,sans-serif;letter-spacing:1.2px;fill:#0e131c}.lane-sub{font:400 8px 'DM Sans',Arial,sans-serif;fill:#53657d}
+  .step{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:1px;fill:#53657d;text-anchor:middle}
+  .model{fill:#fff;stroke:#66768b;stroke-width:1;stroke-dasharray:5 4}.gate{fill:#edf3fc;stroke:#306bd9;stroke-width:1.35}
+  .handoff{fill:none;stroke:#306bd9;stroke-width:1;stroke-dasharray:4 4;marker-end:url(#agent-workflows-arrow-blue)}
+</style>
+<text x="40" y="48" class="title">Three agents, one evidence contract</text><text x="40" y="72" class="subtitle">Each graph has one job. Every model output passes a deterministic evidence gate before delivery.</text>
+
+<text x="248" y="116" class="step">1 / INTAKE</text><text x="412" y="116" class="step">2 / GROUND</text><text x="576" y="116" class="step">3 / REASON</text><text x="740" y="116" class="step">4 / VERIFY</text><text x="898" y="116" class="step">5 / DELIVER</text>
+
+<rect x="32" y="132" width="936" height="112" rx="8" class="lane-alt"/><rect x="32" y="260" width="936" height="112" rx="8" class="lane"/><rect x="32" y="388" width="936" height="112" rx="8" class="lane-alt"/>
+<g><rect x="48" y="160" width="104" height="56" rx="6" class="node-focus"/><text x="100" y="184" text-anchor="middle" class="lane-label">RESEARCH</text><text x="100" y="201" text-anchor="middle" class="lane-sub">build snapshot</text></g>
+<g><rect x="48" y="288" width="104" height="56" rx="6" class="node-soft"/><text x="100" y="312" text-anchor="middle" class="lane-label">REPORT CHAT</text><text x="100" y="329" text-anchor="middle" class="lane-sub">answer snapshot</text></g>
+<g><rect x="48" y="416" width="104" height="56" rx="6" class="node-soft"/><text x="100" y="440" text-anchor="middle" class="lane-label">EXPLORE</text><text x="100" y="457" text-anchor="middle" class="lane-sub">add public context</text></g>
+
+<path d="M152 188H176M320 188H340M484 188H504M648 188H668M812 188H832" class="connector-link"/>
+<path d="M152 316H176M320 316H340M484 316H504M648 316H668M812 316H832" class="connector"/>
+<path d="M152 444H176M320 444H340M484 444H504M648 444H668M812 444H832" class="connector"/>
+<path d="M898 220V250H412V288" class="handoff"/><path d="M898 220V380H412V416" class="handoff"/>
+<rect x="600" y="238" width="112" height="14" class="edge-mask"/><text x="656" y="248" class="edge-label">LOCKED SNAPSHOT</text>
+
+<g><rect x="176" y="157" width="144" height="62" rx="6" class="node"/><text x="248" y="184" text-anchor="middle" class="node-name">Resolve + retrieve</text><text x="248" y="202" text-anchor="middle" class="node-sub">SEC filings + prices</text></g>
+<g><rect x="340" y="157" width="144" height="62" rx="6" class="gate"/><text x="412" y="184" text-anchor="middle" class="node-name">Python financial core</text><text x="412" y="202" text-anchor="middle" class="node-sub">metrics + verdict</text></g>
+<g><rect x="504" y="157" width="144" height="62" rx="6" class="model"/><text x="576" y="184" text-anchor="middle" class="node-name">GPT-5 mini</text><text x="576" y="202" text-anchor="middle" class="node-sub">peers + memo prose</text></g>
+<g><rect x="668" y="157" width="144" height="62" rx="6" class="gate"/><text x="740" y="184" text-anchor="middle" class="node-name">Output gate</text><text x="740" y="202" text-anchor="middle" class="node-sub">figures stay locked</text></g>
+<g><rect x="832" y="157" width="132" height="62" rx="6" class="node-focus"/><text x="898" y="184" text-anchor="middle" class="node-name">ResearchReport</text><text x="898" y="202" text-anchor="middle" class="node-sub">cited snapshot</text></g>
+
+<g><rect x="176" y="285" width="144" height="62" rx="6" class="node"/><text x="248" y="312" text-anchor="middle" class="node-name">Guard question</text><text x="248" y="330" text-anchor="middle" class="node-sub">bounded input</text></g>
+<g><rect x="340" y="285" width="144" height="62" rx="6" class="node"/><text x="412" y="312" text-anchor="middle" class="node-name">Report ontology</text><text x="412" y="330" text-anchor="middle" class="node-sub">typed facts + provenance</text></g>
+<g><rect x="504" y="285" width="144" height="62" rx="6" class="model"/><text x="576" y="312" text-anchor="middle" class="node-name">GPT-5 mini</text><text x="576" y="330" text-anchor="middle" class="node-sub">Chat Completions</text></g>
+<g><rect x="668" y="285" width="144" height="62" rx="6" class="gate"/><text x="740" y="312" text-anchor="middle" class="node-name">Fact-ID verifier</text><text x="740" y="330" text-anchor="middle" class="node-sub">known evidence only</text></g>
+<g><rect x="832" y="285" width="132" height="62" rx="6" class="node-focus"/><text x="898" y="312" text-anchor="middle" class="node-name">Report answer</text><text x="898" y="330" text-anchor="middle" class="node-sub">Markdown + sources</text></g>
+
+<g><rect x="176" y="413" width="144" height="62" rx="6" class="node"/><text x="248" y="440" text-anchor="middle" class="node-name">Guard question</text><text x="248" y="458" text-anchor="middle" class="node-sub">bounded input</text></g>
+<g><rect x="340" y="413" width="144" height="62" rx="6" class="node"/><text x="412" y="440" text-anchor="middle" class="node-name">Locked report</text><text x="412" y="458" text-anchor="middle" class="node-sub">context anchor</text></g>
+<g><rect x="504" y="413" width="144" height="62" rx="6" class="model"/><text x="576" y="440" text-anchor="middle" class="node-name">GPT-5 mini + web</text><text x="576" y="458" text-anchor="middle" class="node-sub">Responses API</text></g>
+<g><rect x="668" y="413" width="144" height="62" rx="6" class="gate"/><text x="740" y="440" text-anchor="middle" class="node-name">Citation verifier</text><text x="740" y="458" text-anchor="middle" class="node-sub">public HTTP(S) only</text></g>
+<g><rect x="832" y="413" width="132" height="62" rx="6" class="node-focus"/><text x="898" y="440" text-anchor="middle" class="node-name">Explore answer</text><text x="898" y="458" text-anchor="middle" class="node-sub">Markdown + sources</text></g>
+
+<line x1="40" y1="536" x2="960" y2="536" class="rule"/><rect x="40" y="558" width="18" height="12" rx="2" class="gate"/><text x="68" y="568" class="small">deterministic boundary</text><rect x="214" y="558" width="18" height="12" rx="2" class="model"/><text x="242" y="568" class="small">model call</text><text x="360" y="568" class="small strong">Orchestration</text><text x="440" y="568" class="small">LangGraph</text><text x="530" y="568" class="small strong">Observability</text><text x="616" y="568" class="small">LangSmith, optional</text><text x="766" y="568" class="small strong">Model</text><text x="810" y="568" class="small">gpt-5-mini</text>
+</svg>

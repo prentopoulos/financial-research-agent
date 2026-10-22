@@ -1,4 +1,4 @@
-"""Generate Ledger's four branded, self-contained documentation diagrams."""
+"""Generate Ledger's five branded, self-contained documentation diagrams."""
 
 from pathlib import Path
 
@@ -37,8 +37,8 @@ def html(title: str, eyebrow: str, svg: str) -> str:
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet">
-<style>*{{box-sizing:border-box}}body{{margin:0;min-height:100vh;display:grid;place-items:center;padding:40px;background:#fff;color:#0e131c;font-family:'DM Sans',Arial,sans-serif}}main{{width:min(1200px,100%)}}p{{margin:0 0 8px;color:#53657d;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}}h1{{margin:0 0 24px;font:400 36px/1.05 'Instrument Serif',Georgia,serif}}svg{{display:block;width:100%;min-width:900px}}</style>
-</head><body><main><p>{eyebrow}</p><h1>{title}</h1>{svg}</main></body></html>
+<style>*{{box-sizing:border-box}}body{{margin:0;min-height:100vh;display:grid;place-items:center;padding:40px;background:#fff;color:#0e131c;font-family:'DM Sans',Arial,sans-serif}}main{{width:min(1200px,100%);max-width:100%;min-width:0}}p{{margin:0 0 8px;color:#53657d;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}}h1{{margin:0 0 24px;font:400 36px/1.05 'Instrument Serif',Georgia,serif}}.diagram-container{{width:100%;overflow-x:auto}}svg{{display:block;width:100%;min-width:1000px}}@media print{{.diagram-container{{overflow-x:visible}}svg{{min-width:0}}}}</style>
+</head><body><main><p>{eyebrow}</p><h1>{title}</h1><div class="diagram-container">{svg}</div></main></body></html>
 """
 
 
@@ -163,6 +163,53 @@ AXONOMETRIC = f"""<svg viewBox="0 0 1000 660" xmlns="http://www.w3.org/2000/svg"
 </svg>"""
 
 
+AGENT_WORKFLOWS = f"""<svg viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="agents-title agents-desc">
+<title id="agents-title">Ledger agent workflows and model sequence</title><desc id="agents-desc">Three bounded LangGraph workflows show how company research, report chat, and market explore ground evidence, use GPT-5 mini, verify outputs, and deliver cited results.</desc>
+{DEFS}{TOKENS}<rect class="paper" width="1000" height="620"/><rect class="dots" width="1000" height="620"/>
+<style>
+  .lane{{fill:#fff;stroke:#d9e1ec;stroke-width:1}}.lane-alt{{fill:#f8fafc;stroke:#d9e1ec;stroke-width:1}}
+  .lane-label{{font:600 10px 'DM Sans',Arial,sans-serif;letter-spacing:1.2px;fill:#0e131c}}.lane-sub{{font:400 8px 'DM Sans',Arial,sans-serif;fill:#53657d}}
+  .step{{font:600 7px 'DM Sans',Arial,sans-serif;letter-spacing:1px;fill:#53657d;text-anchor:middle}}
+  .model{{fill:#fff;stroke:#66768b;stroke-width:1;stroke-dasharray:5 4}}.gate{{fill:#edf3fc;stroke:#306bd9;stroke-width:1.35}}
+  .handoff{{fill:none;stroke:#306bd9;stroke-width:1;stroke-dasharray:4 4;marker-end:url(#arrow-blue)}}
+</style>
+<text x="40" y="48" class="title">Three agents, one evidence contract</text><text x="40" y="72" class="subtitle">Each graph has one job. Every model output passes a deterministic evidence gate before delivery.</text>
+
+<text x="248" y="116" class="step">1 / INTAKE</text><text x="412" y="116" class="step">2 / GROUND</text><text x="576" y="116" class="step">3 / REASON</text><text x="740" y="116" class="step">4 / VERIFY</text><text x="898" y="116" class="step">5 / DELIVER</text>
+
+<rect x="32" y="132" width="936" height="112" rx="8" class="lane-alt"/><rect x="32" y="260" width="936" height="112" rx="8" class="lane"/><rect x="32" y="388" width="936" height="112" rx="8" class="lane-alt"/>
+<g><rect x="48" y="160" width="104" height="56" rx="6" class="node-focus"/><text x="100" y="184" text-anchor="middle" class="lane-label">RESEARCH</text><text x="100" y="201" text-anchor="middle" class="lane-sub">build snapshot</text></g>
+<g><rect x="48" y="288" width="104" height="56" rx="6" class="node-soft"/><text x="100" y="312" text-anchor="middle" class="lane-label">REPORT CHAT</text><text x="100" y="329" text-anchor="middle" class="lane-sub">answer snapshot</text></g>
+<g><rect x="48" y="416" width="104" height="56" rx="6" class="node-soft"/><text x="100" y="440" text-anchor="middle" class="lane-label">EXPLORE</text><text x="100" y="457" text-anchor="middle" class="lane-sub">add public context</text></g>
+
+<path d="M152 188H176M320 188H340M484 188H504M648 188H668M812 188H832" class="connector-link"/>
+<path d="M152 316H176M320 316H340M484 316H504M648 316H668M812 316H832" class="connector"/>
+<path d="M152 444H176M320 444H340M484 444H504M648 444H668M812 444H832" class="connector"/>
+<path d="M898 220V250H412V288" class="handoff"/><path d="M898 220V380H412V416" class="handoff"/>
+<rect x="600" y="238" width="112" height="14" class="edge-mask"/><text x="656" y="248" class="edge-label">LOCKED SNAPSHOT</text>
+
+<g><rect x="176" y="157" width="144" height="62" rx="6" class="node"/><text x="248" y="184" text-anchor="middle" class="node-name">Resolve + retrieve</text><text x="248" y="202" text-anchor="middle" class="node-sub">SEC filings + prices</text></g>
+<g><rect x="340" y="157" width="144" height="62" rx="6" class="gate"/><text x="412" y="184" text-anchor="middle" class="node-name">Python financial core</text><text x="412" y="202" text-anchor="middle" class="node-sub">metrics + verdict</text></g>
+<g><rect x="504" y="157" width="144" height="62" rx="6" class="model"/><text x="576" y="184" text-anchor="middle" class="node-name">GPT-5 mini</text><text x="576" y="202" text-anchor="middle" class="node-sub">peers + memo prose</text></g>
+<g><rect x="668" y="157" width="144" height="62" rx="6" class="gate"/><text x="740" y="184" text-anchor="middle" class="node-name">Output gate</text><text x="740" y="202" text-anchor="middle" class="node-sub">figures stay locked</text></g>
+<g><rect x="832" y="157" width="132" height="62" rx="6" class="node-focus"/><text x="898" y="184" text-anchor="middle" class="node-name">ResearchReport</text><text x="898" y="202" text-anchor="middle" class="node-sub">cited snapshot</text></g>
+
+<g><rect x="176" y="285" width="144" height="62" rx="6" class="node"/><text x="248" y="312" text-anchor="middle" class="node-name">Guard question</text><text x="248" y="330" text-anchor="middle" class="node-sub">bounded input</text></g>
+<g><rect x="340" y="285" width="144" height="62" rx="6" class="node"/><text x="412" y="312" text-anchor="middle" class="node-name">Report ontology</text><text x="412" y="330" text-anchor="middle" class="node-sub">typed facts + provenance</text></g>
+<g><rect x="504" y="285" width="144" height="62" rx="6" class="model"/><text x="576" y="312" text-anchor="middle" class="node-name">GPT-5 mini</text><text x="576" y="330" text-anchor="middle" class="node-sub">Chat Completions</text></g>
+<g><rect x="668" y="285" width="144" height="62" rx="6" class="gate"/><text x="740" y="312" text-anchor="middle" class="node-name">Fact-ID verifier</text><text x="740" y="330" text-anchor="middle" class="node-sub">known evidence only</text></g>
+<g><rect x="832" y="285" width="132" height="62" rx="6" class="node-focus"/><text x="898" y="312" text-anchor="middle" class="node-name">Report answer</text><text x="898" y="330" text-anchor="middle" class="node-sub">Markdown + sources</text></g>
+
+<g><rect x="176" y="413" width="144" height="62" rx="6" class="node"/><text x="248" y="440" text-anchor="middle" class="node-name">Guard question</text><text x="248" y="458" text-anchor="middle" class="node-sub">bounded input</text></g>
+<g><rect x="340" y="413" width="144" height="62" rx="6" class="node"/><text x="412" y="440" text-anchor="middle" class="node-name">Locked report</text><text x="412" y="458" text-anchor="middle" class="node-sub">context anchor</text></g>
+<g><rect x="504" y="413" width="144" height="62" rx="6" class="model"/><text x="576" y="440" text-anchor="middle" class="node-name">GPT-5 mini + web</text><text x="576" y="458" text-anchor="middle" class="node-sub">Responses API</text></g>
+<g><rect x="668" y="413" width="144" height="62" rx="6" class="gate"/><text x="740" y="440" text-anchor="middle" class="node-name">Citation verifier</text><text x="740" y="458" text-anchor="middle" class="node-sub">public HTTP(S) only</text></g>
+<g><rect x="832" y="413" width="132" height="62" rx="6" class="node-focus"/><text x="898" y="440" text-anchor="middle" class="node-name">Explore answer</text><text x="898" y="458" text-anchor="middle" class="node-sub">Markdown + sources</text></g>
+
+<line x1="40" y1="536" x2="960" y2="536" class="rule"/><rect x="40" y="558" width="18" height="12" rx="2" class="gate"/><text x="68" y="568" class="small">deterministic boundary</text><rect x="214" y="558" width="18" height="12" rx="2" class="model"/><text x="242" y="568" class="small">model call</text><text x="360" y="568" class="small strong">Orchestration</text><text x="440" y="568" class="small">LangGraph</text><text x="530" y="568" class="small strong">Observability</text><text x="616" y="568" class="small">LangSmith, optional</text><text x="766" y="568" class="small strong">Model</text><text x="810" y="568" class="small">gpt-5-mini</text>
+</svg>"""
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     diagrams = {
@@ -170,6 +217,7 @@ def main() -> None:
         "exploded-system.html": html("Ledger, pulled apart", "Exploded system / Ledger", AXONOMETRIC),
         "research-data-flow.html": html("From ticker to cited report", "Data flow / Ledger", DATA_FLOW),
         "access-triangle-matrix.html": html("No session gets all three capabilities", "Security matrix / Ledger", SECURITY),
+        "agent-workflows.html": html("Three agents, one evidence contract", "Agent sequence / Ledger", AGENT_WORKFLOWS),
     }
     for name, content in diagrams.items():
         target = OUT / name

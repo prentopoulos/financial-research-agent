@@ -75,6 +75,13 @@ is never rendered.
 ## Architecture
 
 <p align="center">
+  <img src="docs/diagrams/exploded-system.svg" alt="Exploded axonometric view of the Ledger system" width="900">
+</p>
+
+The exploded view shows the dependency order: public evidence supports deterministic analysis,
+analysis constrains the agent workflows, and those workflows serve the research workspace.
+
+<p align="center">
   <img src="docs/diagrams/system-architecture.svg" alt="Ledger system architecture" width="900">
 </p>
 
@@ -83,11 +90,12 @@ Python owns financial calculations and the valuation verdict. LangGraph routes t
 renders the workspace, and the model interprets evidence without changing locked figures.
 
 <p align="center">
-  <img src="docs/diagrams/exploded-system.svg" alt="Exploded axonometric view of the Ledger system" width="900">
+  <img src="docs/diagrams/agent-workflows.svg" alt="Ledger agent workflows, models, and verification sequence" width="900">
 </p>
 
-The exploded view shows the dependency order: public evidence supports deterministic analysis,
-analysis constrains the agent workflows, and those workflows serve the research workspace.
+Research creates the locked report snapshot. Report chat grounds answers in its typed ontology, while
+Explore adds one cited public-web search. All three flows use `gpt-5-mini` for language work and pass
+through deterministic evidence verification before the UI displays an answer.
 
 ## Security
 
@@ -121,7 +129,7 @@ isolation described in the security model.
 | `npm run dev` | Start the API and web app |
 | `npm run check` | Typecheck, lint, test, and build |
 | `docker compose up --build` | Run the containerized app on port 8000 |
-| `python scripts/generate_docs_diagrams.py` | Rebuild the four documentation diagrams |
+| `python scripts/generate_docs_diagrams.py` | Rebuild the five documentation diagrams |
 
 Reports export as editable Markdown or a paginated PDF with clickable evidence links. See the
 [diagram gallery](docs/ARCHITECTURE.html), [conversation design](docs/CONVERSATIONAL_AGENT_RESEARCH.md),
