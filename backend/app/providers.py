@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import asyncio
 import os
+import time
 from datetime import UTC, datetime
 from typing import Any
 
@@ -16,6 +18,11 @@ load_local_env()
 SEC_BASE = "https://data.sec.gov"
 SEC_WWW = "https://www.sec.gov"
 YAHOO_BASE = "https://query1.finance.yahoo.com"
+
+_COMPANY_INDEX_TTL_SECONDS = 6 * 60 * 60
+_company_index: dict[str, dict[str, Any]] | None = None
+_company_index_loaded_at = 0.0
+_company_index_lock = asyncio.Lock()
 
 
 class DataProviderError(RuntimeError):
@@ -60,8 +67,20 @@ class PublicDataClient:
         return response.text
 
     async def resolve_company(self, ticker: str) -> dict[str, Any]:
-        data = await self._json(f"{SEC_WWW}/files/company_tickers.json")
-        match = next((row for row in data.values() if row["ticker"].upper() == ticker.upper()), None)
+        global _company_index, _company_index_loaded_at
+        now = time.monotonic()
+        if _company_index is None or now - _company_index_loaded_at >= _COMPANY_INDEX_TTL_SECONDS:
+            async with _company_index_lock:
+                now = time.monotonic()
+                if _company_index is None or now - _company_index_loaded_at >= _COMPANY_INDEX_TTL_SECONDS:
+                    data = await self._json(f"{SEC_WWW}/files/company_tickers.json")
+                    _company_index = {
+                        str(row.get("ticker", "")).upper(): row
+                        for row in data.values()
+                        if row.get("ticker")
+                    }
+                    _company_index_loaded_at = now
+        match = _company_index.get(ticker.upper()) if _company_index else None
         if not match:
             raise DataProviderError(f"Ticker {ticker} was not found in the SEC company index.")
         return {

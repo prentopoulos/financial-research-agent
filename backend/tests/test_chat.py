@@ -94,6 +94,10 @@ class ChatTests(unittest.IsolatedAsyncioTestCase):
         report = sample_report()
         store.put(report)
         self.assertEqual(store.get_for_chat(report.run_id).ticker, "TEST")
+        refined = report.model_copy(deep=True)
+        refined.summary = "Refined prose."
+        store.replace(refined)
+        self.assertEqual(store.get(report.run_id).summary, "Refined prose.")
         with self.assertRaises(RuntimeError):
             store.get_for_chat(report.run_id)
 

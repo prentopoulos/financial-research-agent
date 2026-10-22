@@ -43,6 +43,10 @@ issuer, retrieves the latest usable filings and price history, calculates the fi
 Python, verifies peers, and produces a cited report. Missing evidence lowers confidence or stops the
 run. Company data is never simulated.
 
+The verified report loads before the optional model finishes polishing its prose. Ledger replaces the
+deterministic draft when that background job completes. If you export during refinement, the download
+starts automatically with the finished memo.
+
 <p align="center">
   <img src="docs/diagrams/research-data-flow.svg" alt="Ledger research data flow" width="900">
 </p>
@@ -63,6 +67,10 @@ Every completed report becomes a grounded conversation.
 Expand the chat to make it the workspace focus, then return to the report without losing the thread.
 Answers can cite only validated evidence links. Report mode works with OpenAI-compatible chat models;
 Explore requires OpenAI Responses with `web_search` permission.
+
+Answers render safe Markdown for short sections, lists, emphasis, and comparison tables. Inline
+citation markers link to the validated source pills shown below every cited response; raw model HTML
+is never rendered.
 
 ## Architecture
 
