@@ -2,8 +2,8 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>A bounded research system</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet">
-<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:40px;background:#fff;color:#0e131c;font-family:'DM Sans',Arial,sans-serif}main{width:min(1200px,100%)}p{margin:0 0 8px;color:#53657d;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}h1{margin:0 0 24px;font:400 36px/1.05 'Instrument Serif',Georgia,serif}svg{display:block;width:100%;min-width:900px}</style>
-</head><body><main><p>Architecture / Ledger</p><h1>A bounded research system</h1><svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="arch-title arch-desc">
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:40px;background:#fff;color:#0e131c;font-family:'DM Sans',Arial,sans-serif}main{width:min(1200px,100%);max-width:100%;min-width:0}p{margin:0 0 8px;color:#53657d;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}h1{margin:0 0 24px;font:400 36px/1.05 'Instrument Serif',Georgia,serif}.diagram-container{width:100%;overflow-x:auto}svg{display:block;width:100%;min-width:1000px}@media print{.diagram-container{overflow-x:visible}svg{min-width:0}}</style>
+</head><body><main><p>Architecture / Ledger</p><h1>A bounded research system</h1><div class="diagram-container"><svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="arch-title arch-desc">
 <title id="arch-title">Ledger system architecture</title><desc id="arch-desc">Browser requests enter a local FastAPI and LangGraph runtime. Python owns financial calculations and the verdict. Public evidence, OpenAI, and optional LangSmith tracing remain external services.</desc>
 
   <defs>
@@ -51,4 +51,4 @@
 <g><rect x="808" y="272" width="136" height="64" rx="6" class="node-soft"/><text x="876" y="302" text-anchor="middle" class="node-name">OpenAI</text><text x="876" y="319" text-anchor="middle" class="node-sub">optional language layer</text></g>
 <g><rect x="808" y="392" width="136" height="64" rx="6" class="node-dash"/><text x="876" y="421" text-anchor="middle" class="node-name">LangSmith</text><text x="876" y="438" text-anchor="middle" class="node-sub">optional observability</text></g>
 <line x1="40" y1="496" x2="960" y2="496" class="rule"/><text x="40" y="520" class="small strong">Ownership rule</text><text x="136" y="520" class="small">Python calculates. LangGraph routes. Models interpret. Sources prove.</text>
-</svg></main></body></html>
+</svg></div></main></body></html>

@@ -4,6 +4,15 @@ Ledger separates evidence retrieval, deterministic financial analysis, language 
 conversation. This keeps the two decisions that matter most - financial calculations and the
 valuation verdict - in Python rather than in a model response.
 
+## Exploded system view
+
+![Exploded axonometric view of Ledger](diagrams/exploded-system.svg)
+
+The four physical layers show dependency rather than network traffic. Public evidence supports the
+deterministic Python core; that core constrains the three agent workflows; and the workflows serve the
+research workspace. The blue calculation layer is the load-bearing part because language generation
+cannot replace or modify its figures and verdict.
+
 ## System boundary
 
 ![Ledger system architecture](diagrams/system-architecture.svg)
@@ -20,14 +29,19 @@ The `company-research` graph calls the Python analysis layer for period normaliz
 valuation multiples, confidence, and the final verdict. Model output is validated against the typed
 report before it can be displayed or exported.
 
-## Exploded system view
+## Agent workflow sequence
 
-![Exploded axonometric view of Ledger](diagrams/exploded-system.svg)
+![Ledger agent workflows, models, and verification sequence](diagrams/agent-workflows.svg)
 
-The four physical layers show dependency rather than network traffic. Public evidence supports the
-deterministic Python core; that core constrains the three agent workflows; and the workflows serve the
-research workspace. The blue calculation layer is the load-bearing part because language generation
-cannot replace or modify its figures and verdict.
+The research graph resolves live evidence and hands deterministic Python figures to `gpt-5-mini` for
+peer selection and memo prose. Its output gate prevents language generation from changing metrics or
+the verdict. The resulting `ResearchReport` becomes the locked snapshot shared by both conversation
+graphs.
+
+Report chat uses Chat Completions against the snapshot's typed ontology and verifies every returned
+fact ID. Explore uses the Responses API with web search, anchors the request in the same snapshot, and
+accepts only cited public HTTP or HTTPS sources. LangSmith can observe all three sequences when tracing
+is enabled.
 
 ## Research data flow
 
@@ -71,14 +85,15 @@ a separate boundary.
 
 ## Diagram sources
 
-The four diagrams are authored as self-contained HTML with inline SVG and exported to SVG for GitHub:
+The five diagrams are authored as self-contained HTML with inline SVG and exported to SVG for GitHub:
 
-- [System architecture HTML](diagrams/system-architecture.html)
 - [Exploded system HTML](diagrams/exploded-system.html)
+- [System architecture HTML](diagrams/system-architecture.html)
+- [Agent workflow sequence HTML](diagrams/agent-workflows.html)
 - [Research data flow HTML](diagrams/research-data-flow.html)
 - [Access-triangle matrix HTML](diagrams/access-triangle-matrix.html)
 
 Run `py scripts/generate_docs_diagrams.py` to regenerate the HTML sources. SVG exports are produced
 with the installed `diagram-design` skill's exporter and checked with its offline self-check.
 
-[Open all four diagrams](ARCHITECTURE.html).
+[Open all five diagrams](ARCHITECTURE.html).
