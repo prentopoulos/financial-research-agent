@@ -45,6 +45,25 @@ class ReportStore:
             session.chat_turns += 1
             return session.report
 
+    def get(self, run_id: str) -> ResearchReport:
+        now = monotonic()
+        with self._lock:
+            self._prune(now)
+            session = self._sessions.get(run_id)
+            if session is None:
+                raise KeyError(run_id)
+            return session.report
+
+    def replace(self, report: ResearchReport) -> None:
+        """Replace report content without resetting its expiry or conversation limit."""
+        now = monotonic()
+        with self._lock:
+            self._prune(now)
+            session = self._sessions.get(report.run_id)
+            if session is None:
+                raise KeyError(report.run_id)
+            session.report = report
+
     def _prune(self, now: float) -> None:
         expired = [run_id for run_id, session in self._sessions.items() if session.expires_at <= now]
         for run_id in expired:

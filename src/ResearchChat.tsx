@@ -1,8 +1,10 @@
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { ArrowUp, ExternalLink, RotateCcw } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { ChatEvidence, ChatResponse, Citation, ResearchReport } from "./types";
 
-type Message = {
+type ResearchChatMessage = {
   role: "user" | "assistant";
   content: string;
   evidence?: ChatEvidence[];
@@ -26,9 +28,39 @@ const exploreQuestions = (ticker: string) => [
 
 const starterQuestions = (mode: ChatMode, ticker: string) => mode === "report" ? reportQuestions(ticker) : exploreQuestions(ticker);
 
+const citationMarkdown = (content: string, citations: Citation[] = []) =>
+  content.replace(/\[(\d+)\](?!\()/g, (marker, rawIndex: string) => {
+    const citation = citations[Number(rawIndex) - 1];
+    return citation ? `[${rawIndex}](${citation.url})` : marker;
+  });
+
+function ChatAnswer({ message }: { message: ResearchChatMessage }) {
+  if (message.role === "user") return <p>{message.content}</p>;
+
+  return (
+    <div className="chat-markdown">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          a: ({ href, children }) => {
+            const label = String(children);
+            if (/^\d+$/.test(label)) {
+              return <sup className="inline-citation"><a href={href} target="_blank" rel="noreferrer" aria-label={`Open source ${label}`}>{label}</a></sup>;
+            }
+            return <a href={href} target="_blank" rel="noreferrer">{children}<ExternalLink size={11} /></a>;
+          },
+          table: ({ children }) => <div className="chat-table-wrap"><table>{children}</table></div>,
+        }}
+      >
+        {citationMarkdown(message.content, message.citations)}
+      </ReactMarkdown>
+    </div>
+  );
+}
+
 export function ResearchChat({ report, focusComposer = false }: { report: ResearchReport; focusComposer?: boolean }) {
   const [mode, setMode] = useState<ChatMode>("report");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ResearchChatMessage[]>([]);
   const [suggestions, setSuggestions] = useState(starterQuestions("report", report.ticker));
   const [draft, setDraft] = useState("");
   const [pending, setPending] = useState(false);
@@ -48,7 +80,7 @@ export function ResearchChat({ report, focusComposer = false }: { report: Resear
     const clean = question.trim();
     if (!clean || pending) return;
     const history = messages.map(({ role, content }) => ({ role, content })).slice(-8);
-    const userMessage: Message = { role: "user", content: clean };
+    const userMessage: ResearchChatMessage = { role: "user", content: clean };
     setMessages((current) => [...current, userMessage]);
     setDraft("");
     setError("");
@@ -145,7 +177,7 @@ export function ResearchChat({ report, focusComposer = false }: { report: Resear
         ) : messages.map((message, index) => (
           <article key={`${message.role}-${index}`} className={`chat-message ${message.role}`}>
             <span>{message.role === "user" ? "You" : "Ledger"}</span>
-            <p>{message.content}</p>
+            <ChatAnswer message={message} />
             {message.evidence && message.evidence.length > 0 && (
               <details>
                 <summary>Evidence used · {message.evidence.length}</summary>
@@ -155,10 +187,11 @@ export function ResearchChat({ report, focusComposer = false }: { report: Resear
               </details>
             )}
             {message.citations && message.citations.length > 0 && (
-              <div className="chat-citations">
+              <div className="chat-citations" aria-label="Sources">
+                <span className="chat-citations-label">Sources</span>
                 {message.citations.map((citation, citationIndex) => (
                   <a key={citation.url} href={citation.url} target="_blank" rel="noreferrer" title={citation.label}>
-                    {citationIndex + 1}<ExternalLink size={10} />
+                    <b>{citationIndex + 1}</b><span>{citation.source}</span><ExternalLink size={10} />
                   </a>
                 ))}
               </div>

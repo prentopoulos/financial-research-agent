@@ -22,6 +22,7 @@ import { ResearchChat } from "./ResearchChat";
 
 const API = "/api";
 const reportSections = ["conclusion", "financials", "valuation", "risks", "sources"];
+const wait = (milliseconds: number) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 
 const money = (value: number | null, compact = true) => {
   if (value == null) return "—";
@@ -92,6 +93,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState("conclusion");
   const [exportedFile, setExportedFile] = useState("");
+  const [exportPending, setExportPending] = useState<"" | "md" | "pdf">("");
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [railMode, setRailMode] = useState<"chat" | "trace">("chat");
   const [mobileRailOpen, setMobileRailOpen] = useState(false);
@@ -112,6 +114,7 @@ function App() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.detail ?? "Research run failed.");
       setReport(payload);
+      setExportPending("");
       setRailMode("chat");
       setMobileRailOpen(false);
       setChatSpotlight(false);
@@ -128,6 +131,27 @@ function App() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void runResearch("NVDA");
   }, []);
+
+  useEffect(() => {
+    if (!report || report.memo_status !== "pending") return;
+    let cancelled = false;
+    const poll = window.setInterval(async () => {
+      try {
+        const response = await fetch(`${API}/research/${report.run_id}`);
+        if (!response.ok) return;
+        const refreshed = await response.json() as ResearchReport;
+        if (!cancelled && refreshed.memo_status !== "pending") {
+          setReport((current) => current?.run_id === refreshed.run_id ? refreshed : current);
+        }
+      } catch {
+        // A later poll can recover from a transient local API failure.
+      }
+    }, 1000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(poll);
+    };
+  }, [report]);
 
   useEffect(() => {
     const sectionIds = reportSections;
@@ -212,8 +236,20 @@ function App() {
     void runResearch(query);
   };
 
-  const exportMarkdown = () => {
-    if (!report) return;
+  const finalMemo = async (current: ResearchReport) => {
+    let refreshed = current;
+    for (let attempt = 0; attempt < 90 && refreshed.memo_status === "pending"; attempt += 1) {
+      await wait(1000);
+      const response = await fetch(`${API}/research/${current.run_id}`);
+      if (!response.ok) throw new Error("The final memo could not be retrieved.");
+      refreshed = await response.json() as ResearchReport;
+    }
+    if (refreshed.memo_status === "pending") throw new Error("The model-written memo is still processing.");
+    setReport((active) => active?.run_id === refreshed.run_id ? refreshed : active);
+    return refreshed;
+  };
+
+  const downloadMarkdown = (report: ResearchReport) => {
     const memo = safeMemoCopy(report);
     const lines = [
       `# ${report.company_name} (${report.ticker})`,
@@ -270,18 +306,46 @@ function App() {
     setExportMenuOpen(false);
   };
 
-  const exportPdf = async () => {
-    if (!report) return;
+  const downloadPdf = async (report: ResearchReport) => {
     const filename = await downloadResearchPdf(report);
     setExportedFile(filename);
     setExportMenuOpen(false);
+  };
+
+  const exportMarkdown = async () => {
+    if (!report || exportPending) return;
+    setExportPending("md");
+    try {
+      downloadMarkdown(await finalMemo(report));
+    } catch (reason) {
+      setExportedFile(reason instanceof Error ? reason.message : "Export failed.");
+    } finally {
+      setExportPending("");
+    }
+  };
+
+  const exportPdf = async () => {
+    if (!report || exportPending) return;
+    setExportPending("pdf");
+    try {
+      await downloadPdf(await finalMemo(report));
+    } catch (reason) {
+      setExportedFile(reason instanceof Error ? reason.message : "Export failed.");
+    } finally {
+      setExportPending("");
+    }
   };
 
   return (
     <div className="app-shell">
       <header className="masthead">
         <a className="brand" href="#top" aria-label="Ledger home">
-          <span className="brand-mark">L</span>
+          <span className="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 36 36" fill="none">
+              <path d="M11 7V26H27" />
+              <path className="brand-crossbar" d="M11 17H23" />
+            </svg>
+          </span>
           <span>LEDGER</span>
         </a>
         <div className="product-label">Public equity research agent</div>
@@ -331,12 +395,13 @@ function App() {
               <div className="report-kicker">
                 <span>Equity research / {report.generated_at.slice(0, 10)}</span>
                 <div className="report-actions">
+                  {report.memo_status === "pending" && <span className="memo-refinement" role="status"><i /> Memo refining</span>}
                   <button ref={askButton} onClick={() => { setRailMode("chat"); setMobileRailOpen(true); }}><MessageSquareText size={15} /> Ask Ledger</button>
                   <div className="export-menu" ref={exportMenu}>
-                    <button type="button" aria-haspopup="menu" aria-expanded={exportMenuOpen} onClick={() => setExportMenuOpen((open) => !open)}><Download size={15} /> Export memo <ChevronDown size={13} /></button>
+                    <button type="button" aria-haspopup="menu" aria-expanded={exportMenuOpen} disabled={Boolean(exportPending)} onClick={() => setExportMenuOpen((open) => !open)}><Download size={15} /> {exportPending ? "Finalizing memo" : "Export memo"} <ChevronDown size={13} /></button>
                     {exportMenuOpen && <div className="export-options" role="menu" aria-label="Export format">
-                      <button type="button" role="menuitem" onClick={exportMarkdown}><span>Markdown</span><small>.md · editable</small></button>
-                      <button type="button" role="menuitem" onClick={() => void exportPdf()}><span>PDF</span><small>.pdf · formatted</small></button>
+                      <button type="button" role="menuitem" onClick={() => void exportMarkdown()}><span>Markdown</span><small>{report.memo_status === "pending" ? ".md · downloads when ready" : ".md · editable"}</small></button>
+                      <button type="button" role="menuitem" onClick={() => void exportPdf()}><span>PDF</span><small>{report.memo_status === "pending" ? ".pdf · downloads when ready" : ".pdf · formatted"}</small></button>
                     </div>}
                   </div>
                 </div>

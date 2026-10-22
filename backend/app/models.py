@@ -111,4 +111,5 @@ class ResearchReport(BaseModel):
     citations: list[Citation]
     trace: list[TraceStep]
     model: ModelRun
+    memo_status: Literal["pending", "ready", "fallback"] = "ready"
     methodology: str

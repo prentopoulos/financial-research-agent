@@ -268,24 +268,6 @@ async def compose_report(state: ResearchState) -> ResearchState:
     usage = state.get("model_usage", TokenUsage())
     fallback_reason = state.get("fallback_reason")
     model_used = state.get("model_used", False)
-    if model.enabled:
-        try:
-            model_memo, memo_usage = await model.write_memo({
-                "ticker": state["ticker"],
-                "company_name": state["company"]["name"],
-                "sec_industry": state["company"].get("sic_description"),
-                "verdict": verdict,
-                "confidence": confidence,
-                "financials": financials,
-                "valuation": valuation,
-                "validated_peers": peers,
-                "relative_price_to_sales_premium": premium,
-            })
-            memo = model_memo
-            usage += memo_usage
-            model_used = True
-        except ModelError as exc:
-            fallback_reason = "; ".join(filter(None, [fallback_reason, str(exc)]))
 
     retrieved = utc_now()
     cik_plain = str(int(state["company"]["cik"]))
@@ -335,14 +317,78 @@ async def compose_report(state: ResearchState) -> ResearchState:
         citations=citations,
         trace=[],
         model=model_run,
+        memo_status="pending" if model.enabled else "ready",
         methodology=(
             f"Financial metrics use {financials['basis_label']}. Reported facts come from SEC Company Facts and, when needed, consolidated inline-XBRL facts in SEC filings. "
             "Market capitalization uses the latest available share price and SEC-reported shares outstanding. "
             "Multiples are calculated in Python. The configured model may select candidate peers and write prose, but it cannot alter figures or the deterministic verdict."
         ),
     )
-    detail = f"Generated grounded prose with {model.model}; figures and verdict remained deterministic." if model_used else "Generated the deterministic memo; no model credits were used."
+    detail = "Generated the deterministic cited memo; model prose refinement continues after the report loads." if model.enabled else "Generated the deterministic memo; no model credits were used."
     return {"report": report.model_dump(), "citations": [citation.model_dump() for citation in citations], "model_usage": usage, "model_used": model_used, "fallback_reason": fallback_reason or "", "_detail": detail}
+
+
+async def enrich_report_memo(report: ResearchReport) -> ResearchReport:
+    """Refine report prose after first paint without changing figures or the verdict."""
+    if report.memo_status != "pending":
+        return report
+    model = ModelClient()
+    if not model.enabled:
+        updated = report.model_copy(deep=True)
+        updated.memo_status = "fallback"
+        return updated
+
+    started = time.perf_counter()
+    peer_ps = [
+        peer.price_to_sales
+        for peer in report.peers
+        if peer.ticker != report.ticker and peer.price_to_sales is not None
+    ]
+    median_peer_ps = median(peer_ps) if peer_ps else None
+    premium = (
+        report.valuation.price_to_sales / median_peer_ps
+        if report.valuation.price_to_sales and median_peer_ps
+        else None
+    )
+    updated = report.model_copy(deep=True)
+    try:
+        memo, usage = await model.write_memo({
+            "ticker": report.ticker,
+            "company_name": report.company_name,
+            "verdict": report.verdict,
+            "confidence": report.confidence,
+            "financials": report.financials.model_dump(),
+            "valuation": report.valuation.model_dump(),
+            "validated_peers": [peer.model_dump() for peer in report.peers],
+            "relative_price_to_sales_premium": premium,
+        })
+        updated.summary = memo["summary"]
+        updated.thesis = memo["thesis"]
+        updated.risks = memo["risks"]
+        updated.model.enabled = True
+        updated.model.provider = model.provider
+        updated.model.name = model.model
+        updated.model.input_tokens += usage.input_tokens
+        updated.model.output_tokens += usage.output_tokens
+        updated.memo_status = "ready"
+        elapsed = round((time.perf_counter() - started) * 1000)
+        updated.trace.append(TraceStep(
+            name="Refine memo prose",
+            status="completed",
+            latency_ms=elapsed,
+            detail=f"{model.model} refined the memo after first paint; figures and verdict remained deterministic.",
+        ))
+    except ModelError as exc:
+        elapsed = round((time.perf_counter() - started) * 1000)
+        updated.memo_status = "fallback"
+        updated.model.fallback_reason = "; ".join(filter(None, [updated.model.fallback_reason, str(exc)]))
+        updated.trace.append(TraceStep(
+            name="Refine memo prose",
+            status="failed",
+            latency_ms=elapsed,
+            detail="Model prose refinement was unavailable; the deterministic cited memo remains active.",
+        ))
+    return updated
 
 
 def build_graph():

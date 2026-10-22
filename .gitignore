@@ -14,13 +14,6 @@ node_modules/
 
 # Generated build and cache output
 dist/
-video/out/
-.agents/skills/ai-cinematic-broll/
-.agents/skills/device-3d-stage/
-.agents/skills/motion-from-reference/
-.agents/skills/product-demo/
-.agents/skills/remotion-marketing-video/
-.agents/skills/video-audio-stack/
 __pycache__/
 *.py[cod]
 *.tsbuildinfo

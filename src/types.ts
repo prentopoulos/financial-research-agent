@@ -77,6 +77,7 @@ export type ResearchReport = {
   citations: Citation[];
   trace: TraceStep[];
   model: ModelRun;
+  memo_status?: "pending" | "ready" | "fallback";
   methodology: string;
 };
 
