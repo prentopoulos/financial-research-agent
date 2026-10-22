@@ -1,4 +1,4 @@
-"""Generate Ledger's original 43-second ambient score and transition accents."""
+"""Generate Ledger's original 48-second ambient score and transition accents."""
 
 from pathlib import Path
 import wave
@@ -6,7 +6,7 @@ import wave
 import numpy as np
 
 RATE = 48_000
-DURATION = 43.0
+DURATION = 48.0
 OUT = Path(__file__).parents[1] / "public" / "ledger" / "audio" / "ledger-score.wav"
 
 
@@ -28,8 +28,8 @@ def main() -> None:
     chords = [
         (0.0, 10.0, (55.0, 82.41, 110.0)),
         (8.0, 21.0, (61.74, 92.50, 123.47)),
-        (19.0, 33.0, (65.41, 98.0, 130.81)),
-        (31.0, 43.0, (55.0, 82.41, 110.0)),
+        (19.0, 38.0, (65.41, 98.0, 130.81)),
+        (36.0, 48.0, (55.0, 82.41, 110.0)),
     ]
     for start, end, notes in chords:
         local = (t - start) / max(end - start, 0.001)
@@ -44,7 +44,7 @@ def main() -> None:
     audio += pulse * 0.028
 
     # Transition sweeps and low impacts, aligned to scene boundaries.
-    for cue in (3.5, 8.0, 13.5, 19.0, 28.0, 36.0, 39.5):
+    for cue in (3.5, 8.0, 13.5, 19.0, 28.0, 41.0, 44.5):
         local = t - cue
         hit = np.exp(-np.clip(local, 0, None) * 7.5) * (local >= 0) * tone(52.0, t)
         pre = np.clip((local + 0.42) / 0.42, 0, 1) * np.clip((-local) / 0.42, 0, 1)

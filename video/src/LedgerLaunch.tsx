@@ -290,18 +290,181 @@ const WorkspaceScene: React.FC = () => {
   );
 };
 
+const typeOn = (text: string, frame: number, start: number, cadence = 1.25) =>
+  text.slice(0, Math.max(0, Math.min(text.length, Math.floor((frame - start) / cadence))));
+
+const SourceChip: React.FC<{children: React.ReactNode; active?: boolean}> = ({children, active = false}) => (
+  <span style={{
+    display: 'inline-flex',
+    alignItems: 'center',
+    minHeight: 28,
+    padding: '0 9px',
+    border: `1px solid ${active ? COLORS.blue : COLORS.line}`,
+    background: active ? COLORS.blueSoft : COLORS.white,
+    color: active ? COLORS.blue : COLORS.muted,
+    fontSize: 9,
+    fontWeight: 700,
+    letterSpacing: '.06em',
+  }}>{children}</span>
+);
+
+const InteractiveChatStage: React.FC<{frame: number}> = ({frame}) => {
+  const {width, height} = useVideoConfig();
+  const vertical = height > width;
+  const reveal = enter(frame, 8);
+  const canvasW = vertical ? 1160 : 1650;
+  const canvasH = vertical ? 1080 : 790;
+  const scale = vertical ? .86 : 1;
+  const exploreProgress = interpolate(frame, [148, 184], [0, 1], {...clamp, easing: Easing.inOut(Easing.cubic)});
+  const explore = frame >= 168;
+  const reportOpacity = interpolate(frame, [145, 171], [1, 0], clamp);
+  const exploreOpacity = interpolate(frame, [165, 191], [0, 1], clamp);
+  const reportQuestion = typeOn('Why is NVDA fairly valued?', frame, 24, 1.15);
+  const exploreQuestion = typeOn('What could move the thesis next?', frame, 191, 1.05);
+  const reportAnswer = enter(frame, 72);
+  const reportSources = enter(frame, 112);
+  const searchOne = enter(frame, 231);
+  const searchTwo = enter(frame, 244);
+  const searchThree = enter(frame, 257);
+  const exploreAnswer = enter(frame, 286);
+  const exploreSources = enter(frame, 326);
+  const revenueActive = frame >= 72 && frame < 111;
+  const valuationActive = frame >= 105 && frame < 148;
+  const cursorVisible = interpolate(frame, [132, 143, 186, 197], [0, 1, 1, 0], clamp);
+  const cursorX = interpolate(exploreProgress, [0, 1], [vertical ? 490 : 835, vertical ? 655 : 1000]);
+  const cursorY = 54;
+  const camera = interpolate(frame, [0, SCENE.chat], [0, 1], clamp);
+
+  return (
+    <div style={{
+      position: 'absolute',
+      left: '50%',
+      top: vertical ? '56%' : '62%',
+      width: canvasW,
+      height: canvasH,
+      transform: `translate(-50%, -50%) translateY(${(1 - reveal) * 55 - camera * 8}px) scale(${scale * (1 + camera * .018)})`,
+      opacity: reveal,
+      overflow: 'hidden',
+      background: COLORS.white,
+      border: `1px solid ${COLORS.ink}`,
+      boxShadow: '0 44px 130px rgba(14,19,28,.22)',
+      fontFamily: sans,
+      color: COLORS.ink,
+    }}>
+      <div style={{height: 64, display: 'grid', gridTemplateColumns: vertical ? '270px 1fr 160px' : '250px 1fr 190px', alignItems: 'center', borderBottom: `1px solid ${COLORS.ink}`}}>
+        <div style={{height: '100%', display: 'flex', alignItems: 'center', paddingLeft: 22, borderRight: `1px solid ${COLORS.line}`}}><LedgerMark /></div>
+        <div style={{paddingLeft: 26, fontSize: 11, color: COLORS.muted, fontWeight: 700, letterSpacing: '.1em'}}>NVDA / RESEARCH CONVERSATION</div>
+        <div style={{fontSize: 10, color: COLORS.green, fontWeight: 700, letterSpacing: '.08em'}}>● LIVE EVIDENCE</div>
+      </div>
+
+      <div style={{height: 'calc(100% - 64px)', display: 'grid', gridTemplateColumns: vertical ? '380px 1fr' : '520px 1fr'}}>
+        <div style={{borderRight: `1px solid ${COLORS.ink}`, padding: vertical ? '42px 34px' : '44px 40px', background: '#fbfcfd', display: 'flex', flexDirection: 'column'}}>
+          <div style={{fontSize: 10, color: COLORS.muted, letterSpacing: '.1em'}}>ACTIVE REPORT</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 13, marginTop: 18}}>
+            <span style={{width: 44, height: 44, borderRadius: '50%', display: 'grid', placeItems: 'center', color: COLORS.white, background: COLORS.blue, fontSize: 12, fontWeight: 700}}>NV</span>
+            <div><strong style={{fontSize: 15}}>NVIDIA CORP</strong><span style={{display: 'block', marginTop: 5, fontSize: 10, color: COLORS.muted}}>NVDA · NASDAQ</span></div>
+          </div>
+          <div style={{fontFamily: serif, fontSize: vertical ? 39 : 44, lineHeight: .98, marginTop: 42}}>Fairly valued<br/>at today’s price.</div>
+          <div style={{height: 2, width: '100%', background: COLORS.ink, margin: '34px 0 18px'}} />
+          {[
+            ['REVENUE GROWTH', '40.30%', revenueActive],
+            ['GROSS MARGIN', '74.67%', revenueActive],
+            ['PRICE / SALES', '17.61×', valuationActive],
+            ['FCF YIELD', '2.38%', valuationActive],
+          ].map(([label, value, active]) => (
+            <div key={String(label)} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 58, padding: '0 12px', margin: '0 -12px', borderBottom: `1px solid ${COLORS.line}`, background: active ? COLORS.blueSoft : 'transparent', boxShadow: active ? `inset 3px 0 0 ${COLORS.blue}` : 'none', transition: 'background 80ms linear'}}>
+              <span style={{fontSize: 10, color: active ? COLORS.blue : COLORS.muted, fontWeight: 700, letterSpacing: '.08em'}}>{label}</span>
+              <strong style={{fontFamily: serif, fontSize: 27, fontWeight: 400}}>{value}</strong>
+            </div>
+          ))}
+          <div style={{marginTop: 'auto', paddingTop: 20, borderTop: `1px solid ${COLORS.line}`, fontSize: 10, lineHeight: 1.55, color: COLORS.muted}}>Verdict and figures remain fixed while Explore checks current public context.</div>
+        </div>
+
+        <div style={{position: 'relative', padding: vertical ? '34px 38px 30px' : '32px 44px 28px', overflow: 'hidden'}}>
+          <div style={{display: 'flex', alignItems: 'start', justifyContent: 'space-between', borderBottom: `1px solid ${COLORS.line}`, paddingBottom: 22}}>
+            <div>
+              <div style={{fontSize: 10, color: COLORS.muted, fontWeight: 700, letterSpacing: '.1em'}}>{explore ? 'LIVE PUBLIC-MARKET ANALYST' : 'REPORT-SCOPED ANALYST'}</div>
+              <div style={{fontFamily: serif, fontSize: vertical ? 36 : 40, marginTop: 7}}>{explore ? 'Explore NVDA' : 'Ask about NVDA'}</div>
+            </div>
+            <div style={{position: 'relative', width: 330, height: 46, display: 'grid', gridTemplateColumns: '1fr 1fr', border: `1px solid ${COLORS.ink}`, background: COLORS.white}}>
+              <div style={{position: 'absolute', top: 3, bottom: 3, left: 3, width: 'calc(50% - 3px)', background: COLORS.ink, transform: `translateX(${exploreProgress * 100}%)`}} />
+              <span style={{position: 'relative', zIndex: 1, display: 'grid', placeItems: 'center', color: exploreProgress < .5 ? COLORS.white : COLORS.muted, fontSize: 10, fontWeight: 700, letterSpacing: '.08em'}}>REPORT</span>
+              <span style={{position: 'relative', zIndex: 1, display: 'grid', placeItems: 'center', color: exploreProgress >= .5 ? COLORS.white : COLORS.muted, fontSize: 10, fontWeight: 700, letterSpacing: '.08em'}}>EXPLORE</span>
+            </div>
+          </div>
+
+          <div style={{position: 'absolute', left: 44, right: 44, top: 132, bottom: 30, opacity: reportOpacity, transform: `translateX(${-exploreProgress * 42}px)`}}>
+            <div style={{maxWidth: '78%', marginLeft: 'auto', border: `1px solid ${COLORS.ink}`, padding: '15px 18px', fontSize: 15, lineHeight: 1.4, background: COLORS.white}}>
+              {reportQuestion}<span style={{color: COLORS.blue, opacity: frame % 14 < 8 && frame < 64 ? 1 : 0}}>|</span>
+            </div>
+            <div style={{display: 'grid', gridTemplateColumns: '32px 1fr', gap: 14, marginTop: 28, opacity: reportAnswer, transform: `translateY(${(1 - reportAnswer) * 16}px)`}}>
+              <div style={{width: 32, height: 32, display: 'grid', placeItems: 'center', background: COLORS.ink, color: COLORS.white, fontFamily: serif, fontSize: 22}}>L</div>
+              <div>
+                <div style={{fontSize: 10, color: COLORS.blue, fontWeight: 700, letterSpacing: '.1em'}}>LEDGER · REPORT</div>
+                <div style={{fontFamily: serif, fontSize: vertical ? 29 : 32, lineHeight: 1.16, marginTop: 11, maxWidth: 760}}>Growth and margins are exceptional. But the valuation already assumes sustained execution.</div>
+                <div style={{fontSize: 13, lineHeight: 1.6, color: COLORS.muted, marginTop: 16, maxWidth: 760}}>Revenue grew 40.30% and gross margin reached 74.67%, while 17.61× sales and a 2.38% FCF yield leave less room for disappointment.</div>
+                <div style={{display: 'flex', flexWrap: 'wrap', gap: 7, marginTop: 18, opacity: reportSources}}>
+                  <SourceChip active={revenueActive}>[1] FINANCIALS · SEC</SourceChip>
+                  <SourceChip active={valuationActive}>[2] VALUATION · PYTHON</SourceChip>
+                  <SourceChip>[3] PRICE · YAHOO FINANCE</SourceChip>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{position: 'absolute', left: 44, right: 44, top: 132, bottom: 30, opacity: exploreOpacity, transform: `translateX(${(1 - exploreProgress) * 42}px)`}}>
+            <div style={{maxWidth: '78%', marginLeft: 'auto', border: `1px solid ${COLORS.blue}`, padding: '15px 18px', fontSize: 15, lineHeight: 1.4, background: COLORS.blueSoft}}>
+              {exploreQuestion}<span style={{color: COLORS.blue, opacity: frame % 14 < 8 && frame < 236 ? 1 : 0}}>|</span>
+            </div>
+            <div style={{display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 24}}>
+              {[
+                ['SEC FILINGS', searchOne],
+                ['NVIDIA IR', searchTwo],
+                ['PUBLIC MARKET NEWS', searchThree],
+              ].map(([label, progress]) => <div key={String(label)} style={{opacity: Number(progress), transform: `translateY(${(1 - Number(progress)) * 10}px)`}}><SourceChip active>{String(label)} · ✓</SourceChip></div>)}
+            </div>
+            <div style={{display: 'grid', gridTemplateColumns: '32px 1fr', gap: 14, marginTop: 27, opacity: exploreAnswer, transform: `translateY(${(1 - exploreAnswer) * 16}px)`}}>
+              <div style={{width: 32, height: 32, display: 'grid', placeItems: 'center', background: COLORS.blue, color: COLORS.white, fontFamily: serif, fontSize: 22}}>L</div>
+              <div>
+                <div style={{fontSize: 10, color: COLORS.blue, fontWeight: 700, letterSpacing: '.1em'}}>LEDGER · EXPLORE</div>
+                <div style={{fontFamily: serif, fontSize: vertical ? 28 : 31, lineHeight: 1.16, marginTop: 10, maxWidth: 780}}>Watch export restrictions, customer concentration, and the pace of AI infrastructure spending.</div>
+                <div style={{fontSize: 13, lineHeight: 1.55, color: COLORS.muted, marginTop: 14, maxWidth: 780}}>Explore adds cited public context around the report. It cannot rewrite the calculated verdict.</div>
+                <div style={{display: 'flex', gap: 7, marginTop: 17, opacity: exploreSources}}>
+                  <SourceChip>[1] NVIDIA FILINGS</SourceChip>
+                  <SourceChip>[2] NVIDIA IR</SourceChip>
+                  <SourceChip>[3] PUBLIC SOURCES</SourceChip>
+                </div>
+              </div>
+            </div>
+            <div style={{position: 'absolute', left: 46, bottom: 0, color: COLORS.green, fontSize: 9, fontWeight: 700, letterSpacing: '.09em', opacity: exploreSources}}>✓ LIVE WEB SEARCH · ✓ CITED CLAIMS · ✓ REPORT VERDICT LOCKED</div>
+          </div>
+
+          <div style={{position: 'absolute', left: cursorX, top: cursorY, opacity: cursorVisible, zIndex: 8, transform: `scale(${.92 + Math.sin(frame * .35) * .04})`}}>
+            <div style={{width: 0, height: 0, borderTop: '18px solid transparent', borderBottom: '4px solid transparent', borderLeft: `26px solid ${COLORS.blue}`, transform: 'rotate(-42deg)', filter: 'drop-shadow(0 3px 3px rgba(14,19,28,.2))'}} />
+            <div style={{position: 'absolute', left: -7, top: -7, width: 42, height: 42, borderRadius: '50%', border: `2px solid ${COLORS.blue}`, opacity: interpolate(frame, [166, 172, 186], [0, 1, 0], clamp), transform: `scale(${interpolate(frame, [166, 186], [.4, 1.35], clamp)})`}} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ChatScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const {height} = useVideoConfig();
-  const vertical = height > 1080;
+  const {height, width} = useVideoConfig();
+  const vertical = height > width;
   const titleP = enter(frame, 5);
+  const exploreTitle = interpolate(frame, [154, 180], [0, 1], clamp);
   return (
     <AbsoluteFill style={{color: COLORS.ink, opacity: fadeWindow(frame, SCENE.chat)}}>
-      <div style={{position: 'absolute', left: vertical ? 56 : 120, top: vertical ? 142 : 118, zIndex: 4, opacity: titleP, transform: `translateY(${(1 - titleP) * 20}px)`}}>
-        <div style={{fontFamily: serif, fontSize: vertical ? 76 : 84}}>Then ask the report.</div>
-        <div style={{fontFamily: sans, fontSize: vertical ? 17 : 14, color: COLORS.muted, marginTop: 12, letterSpacing: '.06em'}}>THE ANSWER INHERITS THE EVIDENCE</div>
+      <div style={{position: 'absolute', left: vertical ? 56 : 120, top: vertical ? 142 : 108, zIndex: 4, opacity: titleP, transform: `translateY(${(1 - titleP) * 20}px)`}}>
+        <div style={{position: 'relative', height: vertical ? 84 : 92, minWidth: vertical ? 780 : 900, overflow: 'hidden'}}>
+          <div style={{position: 'absolute', inset: 0, fontFamily: serif, fontSize: vertical ? 72 : 82, opacity: 1 - exploreTitle, transform: `translateY(${-exploreTitle * 110}px)`}}>Ask the report.</div>
+          <div style={{position: 'absolute', inset: 0, fontFamily: serif, fontSize: vertical ? 72 : 82, opacity: exploreTitle, transform: `translateY(${(1 - exploreTitle) * 110}px)`}}>Explore what changed.</div>
+        </div>
+        <div style={{fontFamily: sans, fontSize: vertical ? 16 : 13, color: COLORS.muted, marginTop: 6, letterSpacing: '.08em'}}>ONE CONVERSATION · TWO EVIDENCE BOUNDARIES</div>
       </div>
-      <AppFrame frame={frame} focus="chat" />
+      <InteractiveChatStage frame={frame} />
     </AbsoluteFill>
   );
 };

@@ -2,7 +2,7 @@
 
 ## Intent
 
-A 43-second standalone launch film for Ledger. The film turns one ticker into a visible chain of
+A 48-second standalone launch film for Ledger. The film turns one ticker into a visible chain of
 evidence, calculation, judgment, and conversation. It uses the live NVIDIA report generated on
 2026-10-21; no placeholder company data appears in the cut.
 
@@ -25,9 +25,9 @@ from the references.
 | 00:08–00:13.5 | Filing, Company Facts, and price records enter | Make the evidence chain visible. |
 | 00:13.5–00:19 | Exact metrics count into place | Separate deterministic math from language. |
 | 00:19–00:28 | The full research workspace resolves | Deliver the product’s money shot. |
-| 00:28–00:36 | The report analyst answers “why?” | Show grounded conversation as the payoff. |
-| 00:36–00:39.5 | Calculation, citation, and boundary checks | State the trust model without a security lecture. |
-| 00:39.5–00:43 | Ledger lockup | Close on the product promise. |
+| 00:28–00:41 | Report answers “why?”, then Explore checks public context | Make both conversation modes the product payoff. |
+| 00:41–00:44.5 | Calculation, citation, and boundary checks | State the trust model without a security lecture. |
+| 00:44.5–00:48 | Ledger lockup | Close on the product promise. |
 
 ## Production rules
 

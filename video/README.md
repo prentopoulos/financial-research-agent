@@ -1,6 +1,6 @@
 # Ledger launch film
 
-Editable Remotion source for the 43-second Ledger product film. The cut uses exact values from the
+Editable Remotion source for the 48-second Ledger product film. The cut uses exact values from the
 live NVIDIA report generated on 2026-10-21 and mirrors the shipped product’s typography, color, and
 research workspace.
 
